@@ -53,29 +53,30 @@ def compute_elo(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _ensure_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Stellt sicher dass alle FEATURES-Spalten existieren (mit 0-Default)."""
-    all_needed = set(FEATURES)
+    """Stellt sicher dass alle FEATURES-Spalten existieren (mit neutralen Defaults)."""
+    # Map-Winrate-Diffs
     for m in CS2_MAPS:
-        all_needed.add(f"{m}_winrate_diff")
+        if f"{m}_winrate_diff" not in df.columns:
+            df[f"{m}_winrate_diff"] = 0.0
 
-    for col in all_needed:
+    # Alle FEATURES mit neutralem Default auffüllen
+    neutral = {
+        "team1_past3": 0.5, "team2_past3": 0.5,
+        "team1_h2h_pct": 0.5, "team2_h2h_pct": 0.5,
+        "team1_overall_winrate": 0.5, "team2_overall_winrate": 0.5,
+        "team1_lan_winrate": 0.5, "team2_lan_winrate": 0.5,
+        "winrate_diff": 0.0, "lan_winrate_diff": 0.0,
+        "elo_diff": 0.0, "rating_diff": 0.0,
+        "adr_diff": 0.0, "kast_diff": 0.0,
+        "kpr_diff": 0.0, "dpr_diff": 0.0,
+        "star_player_advantage": 0.0, "weakest_link_advantage": 0.0,
+        "consistency_advantage": 0.0,
+        "team1_rating_std": 0.0, "team2_rating_std": 0.0,
+    }
+    for col, default in neutral.items():
         if col not in df.columns:
-            log.debug(f"Spalte '{col}' fehlt — fülle mit 0")
-            df[col] = 0.0
-
-    # Spezifische Defaults wo 0 irreführend wäre
-    if "winner_head2head_percentage" not in df.columns:
-        df["winner_head2head_percentage"] = 0.5
-    if "loser_head2head_percentage" not in df.columns:
-        df["loser_head2head_percentage"]  = 0.5
-    if "h2h_diff" not in df.columns:
-        df["h2h_diff"] = 0.0
-    if "past3_diff" not in df.columns:
-        df["past3_diff"] = 0.0
-    if "winner_past3" not in df.columns:
-        df["winner_past3"] = 0.5
-    if "loser_past3" not in df.columns:
-        df["loser_past3"]  = 0.5
+            log.debug(f"Spalte '{col}' fehlt — fülle mit {default}")
+            df[col] = default
 
     return df
 
@@ -92,6 +93,9 @@ def build_features(df: pd.DataFrame, save: bool = True) -> tuple[pd.DataFrame, d
     """
     log.info("Starte Feature Engineering ...")
     df = df.sort_values("date").copy()
+    # Timezone entfernen — verhindert Vergleichsfehler mit pd.Timestamp
+    if pd.api.types.is_datetime64tz_dtype(df["date"]):
+        df["date"] = df["date"].dt.tz_convert(None)
 
     # 1. ELO berechnen (einzige dynamische Berechnung)
     log.info("  ELO berechnen ...")
@@ -184,10 +188,11 @@ def build_prediction_features(
         vals_a = last_a[last_a["team_a"] == team_a][col].dropna() if col in last_a.columns else pd.Series()
         feats[col] = float(vals_a.mean()) if len(vals_a) > 0 else 0.0
 
-    # H2H
-    cutoff = pd.Timestamp.now() - pd.Timedelta(days=H2H_WINDOW_DAYS)
+    # H2H — Timezone-sicherer Vergleich
+    cutoff = pd.Timestamp.now().tz_localize(None) - pd.Timedelta(days=H2H_WINDOW_DAYS)
+    hist_dates = df_hist["date"].dt.tz_convert(None) if pd.api.types.is_datetime64tz_dtype(df_hist["date"]) else df_hist["date"]
     h2h_mask = (
-        (df_hist["date"] >= cutoff) &
+        (hist_dates >= cutoff) &
         (((df_hist["team_a"] == team_a) & (df_hist["team_b"] == team_b)) |
          ((df_hist["team_a"] == team_b) & (df_hist["team_b"] == team_a)))
     )

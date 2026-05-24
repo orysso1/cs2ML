@@ -45,6 +45,11 @@ def main():
 
     if args.csv:
         df_raw = load_custom_csv(args.csv)
+        # CSV neu geladen → Features-Cache immer invalidieren
+        args.rebuild = True
+        if FEATURES_CSV.exists():
+            FEATURES_CSV.unlink()
+            log.info("Features-Cache gelöscht (neues CSV geladen)")
     elif RAW_CSV.exists():
         log.info(f"Nutze gecachten Raw-CSV: {RAW_CSV}")
         df_raw = pd.read_csv(RAW_CSV, parse_dates=["date"])

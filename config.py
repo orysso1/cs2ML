@@ -8,11 +8,11 @@ MODEL_DIR  = BASE_DIR / "models"
 DATA_DIR.mkdir(exist_ok=True)
 MODEL_DIR.mkdir(exist_ok=True)
 
-RAW_CSV       = DATA_DIR / "matches_raw.csv"
-FEATURES_CSV  = DATA_DIR / "matches_features.csv"
-MODEL_PATH    = MODEL_DIR / "xgb_match.joblib"
-MAP_MODEL_PATH= MODEL_DIR / "xgb_map.joblib"
-ELO_PATH      = MODEL_DIR / "elo_ratings.joblib"
+RAW_CSV        = DATA_DIR / "matches_raw.csv"
+FEATURES_CSV   = DATA_DIR / "matches_features.csv"
+MODEL_PATH     = MODEL_DIR / "xgb_match.joblib"
+MAP_MODEL_PATH = MODEL_DIR / "xgb_map.joblib"
+ELO_PATH       = MODEL_DIR / "elo_ratings.joblib"
 
 # ── Scraping ──────────────────────────────────────────────────────────────────
 HLTV_MIN_DELAY   = 4.0
@@ -21,62 +21,65 @@ HLTV_MAX_RETRIES = 5
 SCRAPE_PAGES     = 20
 
 # ── Feature Engineering ───────────────────────────────────────────────────────
-FORM_WINDOW      = 10
-WINRATE_WINDOW   = 30
-H2H_WINDOW_DAYS  = 730
-MIN_MATCHES      = 5
-ELO_START        = 1500
-ELO_K            = 32
+FORM_WINDOW     = 10
+WINRATE_WINDOW  = 30
+H2H_WINDOW_DAYS = 730
+MIN_MATCHES     = 5
+ELO_START       = 1500
+ELO_K           = 32
 
 # ── CS2 Maps ──────────────────────────────────────────────────────────────────
 CS2_MAPS = ["mirage", "inferno", "nuke", "dust2", "overpass",
             "ancient", "vertigo", "anubis", "train"]
 
-# ── Match-Prediction Features (aus Kaggle-Spalten) ────────────────────────────
+# ── Match-Prediction Features ─────────────────────────────────────────────────
+#
+# LEAKAGE-REGELN:
+#   ✅ Erlaubt: team1_*/team2_* Spalten (feste team-Perspektive, unabhängig vom Ergebnis)
+#   ✅ Erlaubt: *_diff wenn aus team1-team2 berechnet
+#   ❌ VERBOTEN: winner_* / loser_* direkt (kodieren den Ausgang!)
+#   ❌ VERBOTEN: past3_diff / h2h_diff wenn aus winner/loser berechnet
+#
 FEATURES = [
-    # Rating & Performance
-    "rating_diff",
-    "adr_diff",
-    "kast_diff",
+    # Rating & Performance (team1 - team2, ergebnisunabhängig)
+    "rating_diff",       # team1_avg_RATING - team2_avg_RATING
+    "adr_diff",          # team1_avg_ADR - team2_avg_ADR
+    "kast_diff",         # team1_avg_KAST - team2_avg_KAST
     "kpr_diff",
     "dpr_diff",
-    # Winrate
+    # Winrate (team1/team2 Perspektive)
     "team1_overall_winrate",
     "team2_overall_winrate",
     "winrate_diff",
     "team1_lan_winrate",
     "team2_lan_winrate",
     "lan_winrate_diff",
-    # H2H
-    "winner_head2head_percentage",
-    "loser_head2head_percentage",
-    "h2h_diff",
-    # Form / Streak
-    "winner_past3",
-    "loser_past3",
-    "past3_diff",
-    # Star / Weak player
+    # Form — team1/team2-Perspektive (NICHT winner/loser)
+    "team1_past3",       # aus kaggle_loader: korrekt auf team1 umgerechnet
+    "team2_past3",
+    "team1_h2h_pct",     # H2H aus team1-Perspektive
+    "team2_h2h_pct",
+    # Spielerstärke (bereits als Differenz, ergebnisunabhängig)
     "star_player_advantage",
     "weakest_link_advantage",
-    # Consistency
     "team1_rating_std",
     "team2_rating_std",
     "consistency_advantage",
-    # ELO (dynamisch berechnet)
+    # ELO (dynamisch, vor dem Match berechnet)
     "elo_diff",
 ]
 
 # ── Map-Prediction Features ───────────────────────────────────────────────────
 MAP_FEATURES_TEMPLATE = [
     "rating_diff", "adr_diff", "kast_diff",
-    "{map}_winrate_diff",   # z.B. mirage_winrate_diff
+    "{map}_winrate_diff",
     "elo_diff",
-    "h2h_diff",
-    "past3_diff",
+    "team1_h2h_pct",
+    "team1_past3", "team2_past3",
 ]
 
 # ── Modell ────────────────────────────────────────────────────────────────────
-TRAIN_CUTOFF = "2025-08-16"
+TRAIN_CUTOFF = "2024-01-01"
 RANDOM_STATE = 42
 
 # ── Streamlit ─────────────────────────────────────────────────────────────────

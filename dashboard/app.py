@@ -147,7 +147,14 @@ def fi_chart(fi_df):
 def winrate_chart(df, team):
     mask = (df["team_a"] == team) | (df["team_b"] == team)
     sub  = df.loc[mask].sort_values("date").copy()
-    sub["won"] = (sub["winner"] == team).astype(int)
+    # winner enthält echte Teamnamen (nach kaggle_loader-Fix)
+    # Fallback: wenn winner noch "team1"/"team2" enthält → via team_a_won
+    if "team_a_won" in sub.columns and sub["winner"].isin(["team1","team2"]).mean() > 0.5:
+        sub["won"] = np.where(
+            sub["team_a"] == team, sub["team_a_won"], 1 - sub["team_a_won"]
+        ).astype(int)
+    else:
+        sub["won"] = (sub["winner"] == team).astype(int)
     sub["rolling_wr"] = sub["won"].rolling(20, min_periods=5).mean()
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=sub["date"], y=sub["rolling_wr"], mode="lines",
@@ -335,10 +342,14 @@ def main():
                             wr_a = df_src2[df_src2["team_a"] == team_a][col_a].dropna()
                             wr_b = df_src2[df_src2["team_a"] == team_b][col_b].dropna()
                             if len(wr_a) > 0 or len(wr_b) > 0:
+                                def _fmt(v):
+                                    if len(v) == 0: return "n/a"
+                                    m_val = v.mean()
+                                    return f"{m_val/100:.1%}" if m_val > 1 else f"{m_val:.1%}"
                                 map_hist_rows.append({
                                     "Map": m.capitalize(),
-                                    f"{team_a} Hist. Winrate": f"{wr_a.mean():.1%}" if len(wr_a) > 0 else "n/a",
-                                    f"{team_b} Hist. Winrate": f"{wr_b.mean():.1%}" if len(wr_b) > 0 else "n/a",
+                                    f"{team_a} Hist. Winrate": _fmt(wr_a),
+                                    f"{team_b} Hist. Winrate": _fmt(wr_b),
                                 })
                     if map_hist_rows:
                         st.dataframe(pd.DataFrame(map_hist_rows), use_container_width=True, hide_index=True)
@@ -396,7 +407,12 @@ def main():
 
         mask = (df_s["team_a"] == team) | (df_s["team_b"] == team)
         tm   = df_s.loc[mask].copy()
-        tm["won"] = (tm["winner"] == team).astype(int)
+        if "team_a_won" in tm.columns and tm["winner"].isin(["team1","team2"]).mean() > 0.5:
+            tm["won"] = np.where(
+                tm["team_a"] == team, tm["team_a_won"], 1 - tm["team_a_won"]
+            ).astype(int)
+        else:
+            tm["won"] = (tm["winner"] == team).astype(int)
 
         c1,c2,c3,c4 = st.columns(4)
         c1.metric("Matches",  len(tm))
@@ -420,7 +436,11 @@ def main():
                 if col in team_rows.columns:
                     v = team_rows[col].dropna()
                     if len(v) > 0:
-                        map_data[m.capitalize()] = f"{v.mean():.1%}"
+                        val = v.mean()
+                        # Normalisieren: Werte > 1 sind in Prozent (0-100), auf 0-1 umrechnen
+                        if val > 1:
+                            val = val / 100
+                        map_data[m.capitalize()] = f"{val:.1%}"
             if map_data:
                 st.dataframe(
                     pd.DataFrame(map_data.items(), columns=["Map", "Winrate"]),
@@ -434,7 +454,10 @@ def main():
             if opp == team: continue
             sub = df_s.loc[mask & ((df_s["team_a"] == opp) | (df_s["team_b"] == opp))]
             if len(sub) < 2: continue
-            w = (sub["winner"] == team).sum()
+            if "team_a_won" in sub.columns and sub["winner"].isin(["team1","team2"]).mean() > 0.5:
+                w = np.where(sub["team_a"] == team, sub["team_a_won"], 1 - sub["team_a_won"]).sum()
+            else:
+                w = (sub["winner"] == team).sum()
             rows.append({"Gegner": opp, "Matches": len(sub),
                          "Siege": int(w), "Winrate": f"{w/len(sub):.1%}"})
         if rows:

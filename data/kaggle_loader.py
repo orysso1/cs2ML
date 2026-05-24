@@ -84,8 +84,52 @@ def _normalize(df: pd.DataFrame) -> pd.DataFrame:
     df["maps"] = (df.get("score_a", pd.Series(0, index=df.index)).fillna(0) +
                   df.get("score_b", pd.Series(0, index=df.index)).fillna(0)).astype(int)
 
+    # ── Strings normalisieren (Leerzeichen, Groß/Klein) ─────────────────────
+    for col in ["team_a", "team_b", "winner"]:
+        df[col] = df[col].astype(str).str.strip()
+
     # ── Label: team_a_won ─────────────────────────────────────────────────────
-    df["team_a_won"] = (df["winner"] == df["team_a"]).astype(int)
+    # Versuch 1: exakter Vergleich
+    # winner enthält "team1"/"team2" (nicht Teamnamen) → direkt aus Score ableiten
+    w = df["winner"].astype(str).str.strip().str.lower()
+    if w.isin(["team1", "team2"]).mean() > 0.8:
+        df["team_a_won"] = (w == "team1").astype(int)
+        log.info(f"winner enthält 'team1'/'team2' → team_a_won via Keyword-Mapping")
+    elif "score_a" in df.columns and "score_b" in df.columns:
+        df["team_a_won"] = (pd.to_numeric(df["score_a"], errors="coerce") >
+                            pd.to_numeric(df["score_b"], errors="coerce")).astype(int)
+        log.info("winner unklar → team_a_won via score_a > score_b")
+    else:
+        df["team_a_won"] = (df["winner"].str.strip() == df["team_a"].str.strip()).astype(int)
+
+    # Diagnose: wenn Label fast immer 0 → Fallback auf Score-Vergleich
+    label_rate = df["team_a_won"].mean()
+    log.info(f"Label-Check: team_a_won = 1 bei {label_rate:.1%} der Matches")
+
+    if label_rate < 0.05 or label_rate > 0.95:
+        log.warning(
+            f"team_a_won fast immer {int(round(label_rate))} ({label_rate:.1%}) — "
+            f"winner-Spalte stimmt nicht mit team_a überein. Versuche Score-Fallback."
+        )
+        # Fallback: winner via score_team1 > score_team2
+        if "score_a" in df.columns and "score_b" in df.columns:
+            score_a = pd.to_numeric(df["score_a"], errors="coerce")
+            score_b = pd.to_numeric(df["score_b"], errors="coerce")
+            df["team_a_won"] = (score_a > score_b).astype(int)
+            log.info(f"Score-Fallback: team_a_won = 1 bei {df['team_a_won'].mean():.1%}")
+        else:
+            # Letzter Fallback: winner enthält möglicherweise "team1"/"team2" statt Namen
+            # Prüfe ob winner == "team1" / 1 / True
+            w = df["winner"].astype(str).str.lower().str.strip()
+            if w.isin(["team1", "1", "true", "a"]).any():
+                df["team_a_won"] = w.isin(["team1", "1", "true", "a"]).astype(int)
+                log.info(f"Keyword-Fallback: team_a_won = 1 bei {df['team_a_won'].mean():.1%}")
+            else:
+                log.error(
+                    f"Kann team_a_won nicht bestimmen. "
+                    f"winner-Beispiele: {df['winner'].value_counts().head(5).to_dict()}  |  "
+                    f"team_a-Beispiele: {df['team_a'].value_counts().head(3).to_dict()}"
+                )
 
     # ── Numerische Spalten bereinigen ─────────────────────────────────────────
     num_cols = [
@@ -202,6 +246,13 @@ def _normalize(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(subset=["team_a", "team_b", "winner"])
     df = df[(df["team_a"].str.len() > 0) & (df["team_b"].str.len() > 0)]
     df = df.reset_index(drop=True)
+
+    # winner auf echten Teamnamen umschreiben (war "team1"/"team2")
+    # Damit Dashboard-Logik (winner == team_name) funktioniert
+    w = df["winner"].astype(str).str.strip().str.lower()
+    if w.isin(["team1", "team2"]).mean() > 0.5:
+        df["winner"] = np.where(df["team_a_won"] == 1, df["team_a"], df["team_b"])
+        log.info("winner-Spalte auf echte Teamnamen umgeschrieben")
 
     log.info(f"Normalisierung fertig: {len(df)} Matches, {len(df.columns)} Spalten")
     return df

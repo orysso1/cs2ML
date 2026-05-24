@@ -78,13 +78,25 @@ def time_split(df: pd.DataFrame, cutoff: str = TRAIN_CUTOFF):
         train = df.iloc[:split_idx]
         val   = df.iloc[split_idx:]
 
-        # Notfall: Val-Set hat immer noch nur eine Klasse → shuffle letzten 20%
-        if not _both_classes(val):
-            log.warning("80/20-Split hat immer noch nur eine Klasse — mische Val-Set neu.")
-            val = val.sample(frac=1, random_state=42)
+    # Wenn immer noch nur eine Klasse: Label-Problem im Dataset diagnostizieren
+    # Prüfen ob Split-Problem durch alten Cache verursacht wird
+    if not _both_classes(val) or not _both_classes(train):
+        # Letzter Ausweg: neu splitten nach Shuffle der Reihenfolge
+        log.warning("Split hat unbalancierte Klassen — versuche stratifizierten Split ...")
+        from sklearn.model_selection import train_test_split as tts
+        train, val = tts(df, test_size=0.2, random_state=42, stratify=df["team_a_won"])
+        train = train.sort_values("date")
+        val   = val.sort_values("date")
 
-        cutoff = str(val["date"].min().date())
+    if not _both_classes(val) or not _both_classes(train):
+        raise ValueError(
+            f"team_a_won enthält nur eine Klasse — bitte Cache löschen und neu laden:\n"
+            f"  rm data/matches_raw.csv data/matches_features.csv\n"
+            f"  python train.py --csv dein_dataset.csv\n"
+            f"Label-Verteilung: {df['team_a_won'].value_counts().to_dict()}"
+        )
 
+    cutoff = str(val["date"].min().date())
     log.info(f"Train: {len(train)} | Val: {len(val)} | "
              f"Val-Klassen: {sorted(val['team_a_won'].unique())} (Cutoff: {cutoff})")
     return train, val
@@ -140,7 +152,9 @@ def train(df: pd.DataFrame, params: dict | None = None) -> tuple:
              f"AUC: {metrics['val_auc']:.3f}")
     if n_classes < 2:
         log.warning("Val-Set enthält nur eine Klasse — AUC/LogLoss nicht berechenbar.")
-    log.info("\n" + classification_report(y_val, pred_val, target_names=["Team B", "Team A"],
+    log.info("\n" + classification_report(y_val, pred_val,
+                                          labels=[0, 1],
+                                          target_names=["Team B", "Team A"],
                                           zero_division=0))
 
     # Modell mit den tatsächlich genutzten Features speichern
