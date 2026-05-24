@@ -226,5 +226,4 @@ __marimo__/
 # joblib
 *.joblib 
 
-# data files
-data/
+
