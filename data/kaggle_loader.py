@@ -1,13 +1,5 @@
 # data/kaggle_loader.py
-# Lädt das öffentliche CS2-HLTV-Dataset von Kaggle als Bootstrap-Alternative.
-# Kein Scraping nötig — gut als sofortiger Startpunkt.
-#
-# Dataset: https://www.kaggle.com/datasets/griffindesroches/cs2-hltv-professional-match-statistics-dataset
-#
-# Setup:
-#   pip install kaggle
-#   Kaggle API Key unter ~/.kaggle/kaggle.json ablegen
-#   Dann: python data/kaggle_loader.py
+# Lädt und normalisiert das Kaggle CS2-HLTV-Dataset auf das interne Schema.
 
 import logging
 import sys
@@ -17,198 +9,209 @@ import pandas as pd
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from config import DATA_DIR, RAW_CSV
+from config import DATA_DIR, RAW_CSV, CS2_MAPS
 
 log = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Kaggle-Download
-# ─────────────────────────────────────────────────────────────────────────────
-
-KAGGLE_DATASET = "griffindesroches/cs2-hltv-professional-match-statistics-dataset"
-
-
-def download_kaggle(dest: Path = DATA_DIR) -> Path:
-    """Lädt das Dataset via Kaggle-API herunter."""
-    try:
-        import kaggle  # noqa
-    except ImportError:
-        print("Kaggle-Paket fehlt. Installiere mit: pip install kaggle")
-        sys.exit(1)
-
-    dest.mkdir(exist_ok=True)
-    import kaggle
-    kaggle.api.authenticate()
-    kaggle.api.dataset_download_files(KAGGLE_DATASET, path=str(dest), unzip=True)
-    csv_files = list(dest.glob("*.csv"))
-    if not csv_files:
-        raise FileNotFoundError("Kein CSV nach Kaggle-Download gefunden.")
-    return csv_files[0]
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Schema-Normalisierung
-# ─────────────────────────────────────────────────────────────────────────────
-
-def normalize_kaggle_df(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Normalisiert das Kaggle-CSV auf das interne Schema:
-    match_id, date, team_a, team_b, score_a, score_b, winner, event, maps
-    """
-    df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
-
-    # Versuche bekannte Spaltennamen zu mappen
-    col_map = {
-        # Kaggle-Spaltenname → internes Schema
-        "match_id":      "match_id",
-        "id":            "match_id",
-        "date":          "date",
-        "team1":         "team_a",
-        "team1_name":    "team_a",
-        "team_1":        "team_a",
-        "team2":         "team_b",
-        "team_2":        "team_b",
-        "team2_name":    "team_b",
-        "team1_score":   "score_a",
-        "score1":        "score_a",
-        "maps_won_team1":"score_a",
-        "team2_score":   "score_b",
-        "score2":        "score_b",
-        "maps_won_team2":"score_b",
-        "winner":        "winner",
-        "winning_team":  "winner",
-        "event":         "event",
-        "event_name":    "event",
-        "tournament":    "event",
-    }
-
-    rename = {k: v for k, v in col_map.items() if k in df.columns}
-    df = df.rename(columns=rename)
-
-    required = ["team_a", "team_b"]
-    for col in required:
-        if col not in df.columns:
-            raise ValueError(f"Pflicht-Spalte '{col}' nicht im Kaggle-CSV gefunden.\n"
-                             f"Verfügbare Spalten: {list(df.columns)}")
-
-    # Fehlende Spalten mit Defaults füllen
-    if "match_id" not in df.columns:
-        df["match_id"] = [f"kaggle_{i}" for i in range(len(df))]
-    if "event" not in df.columns:
-        df["event"] = "Unknown"
-    if "score_a" not in df.columns:
-        df["score_a"] = np.nan
-    if "score_b" not in df.columns:
-        df["score_b"] = np.nan
-
-    # Gewinner ableiten falls fehlend
-    if "winner" not in df.columns:
-        mask_a = df["score_a"] > df["score_b"]
-        mask_b = df["score_b"] > df["score_a"]
-        df["winner"] = np.where(mask_a, df["team_a"],
-                        np.where(mask_b, df["team_b"], np.nan))
-
-    # Datum normalisieren
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
-
-    # Maps
-    df["maps"] = (pd.to_numeric(df["score_a"], errors="coerce").fillna(0) +
-                  pd.to_numeric(df["score_b"], errors="coerce").fillna(0)).astype(int)
-
-    # Auf internes Schema beschränken
-    keep = ["match_id", "date", "team_a", "team_b", "score_a", "score_b",
-            "winner", "event", "maps"]
-    df = df[[c for c in keep if c in df.columns]]
-
-    df = df.dropna(subset=["date", "team_a", "team_b"])
-    df = df.sort_values("date").reset_index(drop=True)
-
-    return df
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Manuelle CSV-Übergabe
+# Kaggle-CSV einlesen und normalisieren
 # ─────────────────────────────────────────────────────────────────────────────
 
 def load_custom_csv(path: str | Path) -> pd.DataFrame:
     """
-    Lädt ein beliebiges Match-CSV und normalisiert es.
-    Kann mit dem Kaggle-Dataset oder eigenen Exports genutzt werden.
+    Lädt das Kaggle CS2-Dataset und normalisiert es auf internes Schema.
+    Behält alle nützlichen Spalten (Spieler-Stats, Map-Winrates, H2H, ...).
     """
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"CSV nicht gefunden: {path}")
 
-    df = pd.read_csv(path)
-    log.info(f"CSV geladen: {path} ({len(df)} Zeilen, Spalten: {list(df.columns)})")
-    df = normalize_kaggle_df(df)
+    df = pd.read_csv(path, low_memory=False)
+    log.info(f"Geladen: {path} ({len(df)} Zeilen, {len(df.columns)} Spalten)")
+
+    df = _normalize(df)
     df.to_csv(RAW_CSV, index=False)
-    log.info(f"Normalisiert und gespeichert: {RAW_CSV}")
+    log.info(f"Normalisiert und gespeichert: {RAW_CSV} ({len(df)} Zeilen)")
     return df
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Synthetische Demo-Daten (zum Testen ohne echte Daten)
-# ─────────────────────────────────────────────────────────────────────────────
+def _normalize(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalisiert Kaggle-Spalten auf internes Schema."""
+    df = df.copy()
+    df.columns = [c.strip() for c in df.columns]
 
-TEAMS = [
-    "Natus Vincere", "FaZe Clan", "G2 Esports", "Team Vitality",
-    "Heroic", "MOUZ", "Team Spirit", "Astralis",
-    "Cloud9", "ENCE", "Liquid", "NIP",
-    "BIG", "Complexity", "paiN", "FURIA",
-]
+    # ── Pflicht-Umbenennungen ─────────────────────────────────────────────────
+    rename = {}
 
-EVENTS = ["IEM Katowice", "IEM Cologne", "BLAST Premier", "ESL Pro League",
-          "PGL Major", "BLAST Bounty", "ESL Impact", "CCT"]
+    # team_a / team_b
+    for src, dst in [("team1_name", "team_a"), ("team2_name", "team_b")]:
+        if src in df.columns:
+            rename[src] = dst
+
+    # winner bleibt winner
+    # date
+    if "date" not in df.columns:
+        for alt in ["scraped_date", "match_date"]:
+            if alt in df.columns:
+                rename[alt] = "date"
+                break
+
+    # event
+    if "tournament" in df.columns and "event" not in df.columns:
+        rename["tournament"] = "event"
+
+    df = df.rename(columns=rename)
+
+    # ── Datum ─────────────────────────────────────────────────────────────────
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df.dropna(subset=["date"])
+    df = df.sort_values("date").reset_index(drop=True)
+
+    # ── Pflicht-Spalten prüfen ────────────────────────────────────────────────
+    for col in ["team_a", "team_b", "winner"]:
+        if col not in df.columns:
+            raise ValueError(
+                f"Pflicht-Spalte '{col}' fehlt. Verfügbare Spalten: {list(df.columns)[:20]}"
+            )
+
+    # ── Score ─────────────────────────────────────────────────────────────────
+    if "score_a" not in df.columns and "score_team1" in df.columns:
+        df["score_a"] = pd.to_numeric(df["score_team1"], errors="coerce")
+    if "score_b" not in df.columns and "score_team2" in df.columns:
+        df["score_b"] = pd.to_numeric(df["score_team2"], errors="coerce")
+
+    df["maps"] = (df.get("score_a", pd.Series(0, index=df.index)).fillna(0) +
+                  df.get("score_b", pd.Series(0, index=df.index)).fillna(0)).astype(int)
+
+    # ── Label: team_a_won ─────────────────────────────────────────────────────
+    df["team_a_won"] = (df["winner"] == df["team_a"]).astype(int)
+
+    # ── Numerische Spalten bereinigen ─────────────────────────────────────────
+    num_cols = [
+        "rating_diff", "adr_diff", "kast_diff", "kpr_diff", "dpr_diff",
+        "team1_avg_RATING", "team2_avg_RATING",
+        "team1_avg_ADR",    "team2_avg_ADR",
+        "team1_avg_KAST",   "team2_avg_KAST",
+        "team1_avg_KPR",    "team2_avg_KPR",
+        "team1_avg_DPR",    "team2_avg_DPR",
+        "winner_head2head_percentage", "loser_head2head_percentage",
+        "winner_head2head_freq",       "loser_head2head_freq",
+        "winner_past3",     "loser_past3",
+        "team1_overall_winrate", "team2_overall_winrate",
+        "team1_lan_winrate",     "team2_lan_winrate",
+        "team1_online_winrate",  "team2_online_winrate",
+        "team1_totalwinrate",    "team2_totalwinrate",
+        "team1_totallossrate",   "team2_totallossrate",
+        "team1_rating_std",      "team2_rating_std",
+        "consistency_advantage", "star_player_advantage",
+        "weakest_link_advantage",
+    ] + [f"winner_{m}" for m in CS2_MAPS] + [f"loser_{m}" for m in CS2_MAPS]
+
+    for col in num_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # ── Abgeleitete Diff-Features (team1 = winner-Perspektive) ───────────────
+    # Winrate-Diffs
+    df = _add_diff(df, "team1_overall_winrate", "team2_overall_winrate", "winrate_diff")
+    df = _add_diff(df, "team1_lan_winrate",     "team2_lan_winrate",     "lan_winrate_diff")
+    df = _add_diff(df, "team1_online_winrate",  "team2_online_winrate",  "online_winrate_diff")
+
+    # H2H aus winner/loser-Perspektive auf team_a/team_b umrechnen
+    # winner_* = Statistik des Match-Gewinners, loser_* = Statistik des Verlierers
+    # Wir brauchen team1_h2h und team2_h2h
+    if "winner_head2head_percentage" in df.columns:
+        df["h2h_diff"] = np.where(
+            df["team_a_won"] == 1,
+            df["winner_head2head_percentage"] - df["loser_head2head_percentage"],
+            df["loser_head2head_percentage"]  - df["winner_head2head_percentage"],
+        )
+        df["team1_h2h_pct"] = np.where(
+            df["team_a_won"] == 1,
+            df["winner_head2head_percentage"],
+            df["loser_head2head_percentage"],
+        )
+        df["team2_h2h_pct"] = np.where(
+            df["team_a_won"] == 1,
+            df["loser_head2head_percentage"],
+            df["winner_head2head_percentage"],
+        )
+
+    # past3 (letzte 3 Matches Winrate)
+    if "winner_past3" in df.columns:
+        df["past3_diff"] = np.where(
+            df["team_a_won"] == 1,
+            df["winner_past3"] - df["loser_past3"],
+            df["loser_past3"]  - df["winner_past3"],
+        )
+        df["team1_past3"] = np.where(
+            df["team_a_won"] == 1, df["winner_past3"], df["loser_past3"]
+        )
+        df["team2_past3"] = np.where(
+            df["team_a_won"] == 1, df["loser_past3"], df["winner_past3"]
+        )
+
+    # Map-Winrate-Diffs pro Map
+    for m in CS2_MAPS:
+        w_col = f"winner_{m}"
+        l_col = f"loser_{m}"
+        if w_col in df.columns and l_col in df.columns:
+            df[f"team1_{m}_winrate"] = np.where(
+                df["team_a_won"] == 1, df[w_col], df[l_col]
+            )
+            df[f"team2_{m}_winrate"] = np.where(
+                df["team_a_won"] == 1, df[l_col], df[w_col]
+            )
+            df[f"{m}_winrate_diff"] = df[f"team1_{m}_winrate"] - df[f"team2_{m}_winrate"]
+
+    # Spieler-Ratings (team1/2 normalisieren auf team_a/b-Perspektive)
+    # rating_diff ist im Dataset bereits vorhanden (team1 - team2)
+    # Wir müssen prüfen ob es aus team1=winner oder team1=actual team1 berechnet wurde
+    # Im Kaggle-Schema ist team1 = der erste genannte Team (nicht zwingend der Gewinner)
+    # → rating_diff = team1_avg_RATING - team2_avg_RATING (bereits korrekt für team_a)
+
+    # Falls rating_diff fehlt, selbst berechnen
+    if "rating_diff" not in df.columns:
+        if "team1_avg_RATING" in df.columns and "team2_avg_RATING" in df.columns:
+            df["rating_diff"] = df["team1_avg_RATING"] - df["team2_avg_RATING"]
+        else:
+            df["rating_diff"] = 0.0
+
+    if "adr_diff" not in df.columns and "team1_avg_ADR" in df.columns:
+        df["adr_diff"] = df["team1_avg_ADR"] - df["team2_avg_ADR"]
+    if "kast_diff" not in df.columns and "team1_avg_KAST" in df.columns:
+        df["kast_diff"] = df["team1_avg_KAST"] - df["team2_avg_KAST"]
+    if "kpr_diff" not in df.columns and "team1_avg_KPR" in df.columns:
+        df["kpr_diff"] = df["team1_avg_KPR"] - df["team2_avg_KPR"]
+    if "dpr_diff" not in df.columns and "team1_avg_DPR" in df.columns:
+        df["dpr_diff"] = df["team1_avg_DPR"] - df["team2_avg_DPR"]
+
+    # ── event_type für LAN/Online ─────────────────────────────────────────────
+    if "event_type" in df.columns:
+        df["is_lan"] = (df["event_type"].str.lower() == "lan").astype(int)
+    else:
+        df["is_lan"] = 0
+
+    # ── Duplikate entfernen ───────────────────────────────────────────────────
+    if "match_id" in df.columns:
+        df = df.drop_duplicates(subset=["match_id"])
+    elif "hltv_match_id" in df.columns:
+        df = df.drop_duplicates(subset=["hltv_match_id"])
+
+    df = df.dropna(subset=["team_a", "team_b", "winner"])
+    df = df[(df["team_a"].str.len() > 0) & (df["team_b"].str.len() > 0)]
+    df = df.reset_index(drop=True)
+
+    log.info(f"Normalisierung fertig: {len(df)} Matches, {len(df.columns)} Spalten")
+    return df
 
 
-def generate_demo_data(n_matches: int = 2000) -> pd.DataFrame:
-    """
-    Erzeugt realistische synthetische Trainingsdaten.
-    Nützlich für Tests ohne Scraping oder Kaggle-Account.
-    """
-    rng = np.random.default_rng(42)
-    rows = []
-
-    # Jedes Team bekommt ein verstecktes "Skill"-Level
-    skill = {t: rng.uniform(0.35, 0.75) for t in TEAMS}
-
-    start = pd.Timestamp("2022-01-01")
-    end   = pd.Timestamp("2025-01-01")
-    date_range = (end - start).days
-
-    for i in range(n_matches):
-        ta, tb = rng.choice(TEAMS, size=2, replace=False)
-        pa = skill[ta]
-        pb = skill[tb]
-        # Gewinnwahrscheinlichkeit proportional zum Skill-Verhältnis
-        p_a_wins = pa / (pa + pb)
-
-        won_a    = rng.random() < p_a_wins
-        score_a  = rng.integers(1, 4) if won_a else rng.integers(0, 3)
-        score_b  = rng.integers(0, score_a) if won_a else rng.integers(score_a + 1, 4)
-        score_a  = int(score_a)
-        score_b  = int(min(score_b, 3))
-
-        date = start + pd.Timedelta(days=int(rng.integers(0, date_range)))
-        event = rng.choice(EVENTS)
-
-        rows.append({
-            "match_id": f"demo_{i:05d}",
-            "date":     date,
-            "team_a":   ta,
-            "team_b":   tb,
-            "score_a":  score_a,
-            "score_b":  score_b,
-            "winner":   ta if won_a else tb,
-            "event":    event,
-            "maps":     score_a + score_b,
-        })
-
-    df = pd.DataFrame(rows).sort_values("date").reset_index(drop=True)
-    df.to_csv(RAW_CSV, index=False)
-    log.info(f"Demo-Daten generiert: {len(df)} Matches → {RAW_CSV}")
+def _add_diff(df, col_a, col_b, out_col):
+    if col_a in df.columns and col_b in df.columns:
+        df[out_col] = df[col_a] - df[col_b]
+    elif out_col not in df.columns:
+        df[out_col] = 0.0
     return df
 
 
@@ -219,23 +222,11 @@ if __name__ == "__main__":
     import argparse
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-    parser = argparse.ArgumentParser(description="Kaggle Loader / Demo-Daten")
-    parser.add_argument("--kaggle", action="store_true", help="Von Kaggle herunterladen")
-    parser.add_argument("--csv",    type=str,            help="Lokales CSV normalisieren")
-    parser.add_argument("--demo",   action="store_true", help="Demo-Daten generieren")
-    parser.add_argument("--n",      type=int, default=2000, help="Anzahl Demo-Matches")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--csv", type=str, required=True)
     args = parser.parse_args()
 
-    if args.kaggle:
-        path = download_kaggle()
-        df   = load_custom_csv(path)
-    elif args.csv:
-        df = load_custom_csv(args.csv)
-    elif args.demo:
-        df = generate_demo_data(args.n)
-    else:
-        print("Nutze --demo, --csv <pfad> oder --kaggle")
-        sys.exit(0)
-
-    print(df.tail(5).to_string())
+    df = load_custom_csv(args.csv)
+    print(df[["date", "team_a", "team_b", "winner", "rating_diff"]].tail(10).to_string())
     print(f"\nTeams: {df['team_a'].nunique()} | Matches: {len(df)}")
+    print(f"Spalten: {list(df.columns)}")

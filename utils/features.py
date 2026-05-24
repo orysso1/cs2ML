@@ -1,6 +1,7 @@
 # utils/features.py
-# Feature Engineering für das CS2-Prediction-Modell.
-# Berechnet: ELO, Winrate, Form, Head-to-Head, Ranking-Diff, Map-Winrate, ...
+# Feature Engineering für CS2 Prediction.
+# Nutzt die reichhaltigen Kaggle-Spalten direkt +
+# berechnet dynamisches ELO on top.
 
 import logging
 import sys
@@ -12,329 +13,118 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import (
-    ELO_START, ELO_K, FORM_WINDOW, WINRATE_WINDOW,
-    H2H_WINDOW_DAYS, MIN_MATCHES, FEATURES_CSV
+    ELO_START, ELO_K, FEATURES, CS2_MAPS, FEATURES_CSV,
+    MIN_MATCHES, WINRATE_WINDOW, FORM_WINDOW, H2H_WINDOW_DAYS
 )
 
 log = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1. ELO-Rating
+# ELO (einzige dynamisch berechnete Feature — alles andere kommt direkt aus dem CSV)
 # ─────────────────────────────────────────────────────────────────────────────
 
 def compute_elo(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     """
-    Berechnet für jedes Match das ELO-Rating der Teams *vor* dem Match
-    (wichtig: kein Data-Leakage) und gibt die aktuellen Ratings zurück.
-
-    Returns:
-        df:          DataFrame mit Spalten elo_a_pre, elo_b_pre
-        elo_ratings: Dict mit aktuellen ELO-Werten aller Teams
+    Berechnet ELO *vor* jedem Match (kein Leakage).
+    Gibt df mit elo_diff-Spalte + aktuelles Ratings-Dict zurück.
     """
     df = df.sort_values("date").copy()
     elo: dict[str, float] = {}
-
-    elo_a_pre, elo_b_pre = [], []
+    elo_diffs = []
 
     for _, row in df.iterrows():
         ta, tb = row["team_a"], row["team_b"]
         ra = elo.get(ta, ELO_START)
         rb = elo.get(tb, ELO_START)
+        elo_diffs.append(ra - rb)
 
-        elo_a_pre.append(ra)
-        elo_b_pre.append(rb)
+        ea   = 1 / (1 + 10 ** ((rb - ra) / 400))
+        won  = 1 if row["winner"] == ta else 0
+        elo[ta] = ra + ELO_K * (won - ea)
+        elo[tb] = rb + ELO_K * ((1 - won) - (1 - ea))
 
-        # Erwartete Gewinnwahrscheinlichkeit
-        ea = 1 / (1 + 10 ** ((rb - ra) / 400))
-        eb = 1 - ea
-
-        won_a = 1 if row["winner"] == ta else 0
-        elo[ta] = ra + ELO_K * (won_a - ea)
-        elo[tb] = rb + ELO_K * ((1 - won_a) - eb)
-
-    df["elo_a_pre"] = elo_a_pre
-    df["elo_b_pre"] = elo_b_pre
-    df["elo_diff"]  = df["elo_a_pre"] - df["elo_b_pre"]
-
+    df["elo_diff"] = elo_diffs
     return df, elo
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 2. Rolling Winrate
+# Fehlende Spalten mit neutralen Defaults auffüllen
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _rolling_winrate(df: pd.DataFrame, team: str, before_date: pd.Timestamp,
-                     days: int) -> float:
-    """Winrate eines Teams in den letzten `days` Tagen vor `before_date`."""
-    cutoff = before_date - timedelta(days=days)
-    mask = (
-        (df["date"] >= cutoff) &
-        (df["date"] < before_date) &
-        ((df["team_a"] == team) | (df["team_b"] == team))
-    )
-    sub = df.loc[mask]
-    if len(sub) < MIN_MATCHES:
-        return 0.5  # Neutral wenn zu wenig Daten
-    wins = (sub["winner"] == team).sum()
-    return wins / len(sub)
+def _ensure_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Stellt sicher dass alle FEATURES-Spalten existieren (mit 0-Default)."""
+    all_needed = set(FEATURES)
+    for m in CS2_MAPS:
+        all_needed.add(f"{m}_winrate_diff")
 
+    for col in all_needed:
+        if col not in df.columns:
+            log.debug(f"Spalte '{col}' fehlt — fülle mit 0")
+            df[col] = 0.0
 
-def compute_winrates(df: pd.DataFrame) -> pd.DataFrame:
-    """Fügt winrate_30d_a, winrate_30d_b und _diff hinzu."""
-    df = df.sort_values("date").copy()
-    wr_a, wr_b = [], []
+    # Spezifische Defaults wo 0 irreführend wäre
+    if "winner_head2head_percentage" not in df.columns:
+        df["winner_head2head_percentage"] = 0.5
+    if "loser_head2head_percentage" not in df.columns:
+        df["loser_head2head_percentage"]  = 0.5
+    if "h2h_diff" not in df.columns:
+        df["h2h_diff"] = 0.0
+    if "past3_diff" not in df.columns:
+        df["past3_diff"] = 0.0
+    if "winner_past3" not in df.columns:
+        df["winner_past3"] = 0.5
+    if "loser_past3" not in df.columns:
+        df["loser_past3"]  = 0.5
 
-    for _, row in df.iterrows():
-        wr_a.append(_rolling_winrate(df, row["team_a"], row["date"], WINRATE_WINDOW))
-        wr_b.append(_rolling_winrate(df, row["team_b"], row["date"], WINRATE_WINDOW))
-
-    df["winrate_30d_a"]    = wr_a
-    df["winrate_30d_b"]    = wr_b
-    df["winrate_30d_diff"] = df["winrate_30d_a"] - df["winrate_30d_b"]
     return df
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 3. Form (letzte N Matches)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _recent_form(df: pd.DataFrame, team: str, before_date: pd.Timestamp,
-                 n: int) -> float:
-    """Winrate der letzten N Matches eines Teams."""
-    mask = (
-        (df["date"] < before_date) &
-        ((df["team_a"] == team) | (df["team_b"] == team))
-    )
-    sub = df.loc[mask].tail(n)
-    if len(sub) == 0:
-        return 0.5
-    wins = (sub["winner"] == team).sum()
-    return wins / len(sub)
-
-
-def compute_form(df: pd.DataFrame) -> pd.DataFrame:
-    """Fügt form_a, form_b und form_diff (letzte 10 Matches) hinzu."""
-    df = df.sort_values("date").copy()
-    fa, fb = [], []
-
-    for _, row in df.iterrows():
-        fa.append(_recent_form(df, row["team_a"], row["date"], FORM_WINDOW))
-        fb.append(_recent_form(df, row["team_b"], row["date"], FORM_WINDOW))
-
-    df["form_a"]    = fa
-    df["form_b"]    = fb
-    df["form_diff"] = df["form_a"] - df["form_b"]
-    return df
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 4. Head-to-Head
-# ─────────────────────────────────────────────────────────────────────────────
-
-def compute_h2h(df: pd.DataFrame) -> pd.DataFrame:
-    """H2H-Winrate von Team A gegen Team B (letzten 2 Jahre)."""
-    df = df.sort_values("date").copy()
-    h2h = []
-
-    for _, row in df.iterrows():
-        cutoff = row["date"] - timedelta(days=H2H_WINDOW_DAYS)
-        ta, tb = row["team_a"], row["team_b"]
-        mask = (
-            (df["date"] >= cutoff) &
-            (df["date"] < row["date"]) &
-            (
-                ((df["team_a"] == ta) & (df["team_b"] == tb)) |
-                ((df["team_a"] == tb) & (df["team_b"] == ta))
-            )
-        )
-        sub = df.loc[mask]
-        if len(sub) == 0:
-            h2h.append(0.5)
-        else:
-            wins_a = (sub["winner"] == ta).sum()
-            h2h.append(wins_a / len(sub))
-
-    df["h2h_winrate_a"] = h2h
-    return df
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 5. Tage seit letztem Match (Frische-Indikator)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def compute_days_since_last(df: pd.DataFrame) -> pd.DataFrame:
-    """Tage seit dem letzten Match (Ermüdung / Frische)."""
-    df = df.sort_values("date").copy()
-    last_a, last_b = [], []
-
-    for _, row in df.iterrows():
-        d = row["date"]
-        ta, tb = row["team_a"], row["team_b"]
-
-        prev_a = df.loc[(df["date"] < d) & ((df["team_a"] == ta) | (df["team_b"] == ta)), "date"]
-        prev_b = df.loc[(df["date"] < d) & ((df["team_a"] == tb) | (df["team_b"] == tb)), "date"]
-
-        last_a.append((d - prev_a.max()).days if len(prev_a) > 0 else 14)
-        last_b.append((d - prev_b.max()).days if len(prev_b) > 0 else 14)
-
-    df["days_since_last_a"]    = last_a
-    df["days_since_last_b"]    = last_b
-    df["days_since_last_diff"] = df["days_since_last_a"] - df["days_since_last_b"]
-    return df
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 6. Map-Winrate (wenn vorhanden)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def compute_map_winrate(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Allgemeine Map-Winrate pro Team (falls keine map-spezifische Spalte existiert,
-    nutzen wir die generelle Winrate als Proxy).
-    """
-    if "map" in df.columns:
-        # Map-spezifische Winrate berechnen
-        for team_col in ["team_a", "team_b"]:
-            col_name = f"map_winrate_{team_col[-1]}"
-            rates = []
-            for _, row in df.iterrows():
-                mask = (
-                    (df["date"] < row["date"]) &
-                    (df.get("map", "") == row.get("map", "")) &
-                    ((df["team_a"] == row[team_col]) | (df["team_b"] == row[team_col]))
-                )
-                sub = df.loc[mask]
-                if len(sub) < 3:
-                    rates.append(0.5)
-                else:
-                    wins = (sub["winner"] == row[team_col]).sum()
-                    rates.append(wins / len(sub))
-            df[col_name] = rates
-    else:
-        # Fallback: allgemeine Winrate als Map-Proxy
-        df["map_winrate_a"] = df["winrate_30d_a"]
-        df["map_winrate_b"] = df["winrate_30d_b"]
-
-    df["map_winrate_diff"] = df["map_winrate_a"] - df["map_winrate_b"]
-    return df
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 7. Ranking-Differenz
-# ─────────────────────────────────────────────────────────────────────────────
-
-def compute_ranking(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Schätzt Rankings dynamisch aus ELO (falls kein echtes Ranking vorhanden).
-    Echte Rankings können aus HLTV-Daten ergänzt werden.
-    """
-    if "rank_a" in df.columns and "rank_b" in df.columns:
-        df["ranking_diff"] = df["rank_b"] - df["rank_a"]  # Negativ = A besser
-    else:
-        # ELO als Ranking-Proxy (höheres ELO → niedrigeres Ranking → besser)
-        df["ranking_diff"] = (df["elo_b_pre"] - df["elo_a_pre"]) / 100
-    return df
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 8. Lineup-Alter (Roster-Stabilität)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def compute_lineup_age(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Proxy für Roster-Stabilität: wie lange spielen die Teams schon zusammen?
-    Hier: Tage seit dem ersten gemeinsamen Match in den Daten.
-    """
-    first_seen: dict[str, pd.Timestamp] = {}
-    ages_a, ages_b = [], []
-
-    for _, row in df.iterrows():
-        d = row["date"]
-        ta, tb = row["team_a"], row["team_b"]
-
-        if ta not in first_seen:
-            first_seen[ta] = d
-        if tb not in first_seen:
-            first_seen[tb] = d
-
-        ages_a.append((d - first_seen[ta]).days)
-        ages_b.append((d - first_seen[tb]).days)
-
-    df["lineup_age_a"]    = ages_a
-    df["lineup_age_b"]    = ages_b
-    df["lineup_age_diff"] = df["lineup_age_a"] - df["lineup_age_b"]
-    return df
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 9. Label
-# ─────────────────────────────────────────────────────────────────────────────
-
-def add_label(df: pd.DataFrame) -> pd.DataFrame:
-    """Fügt Zielvariable hinzu: 1 = Team A gewinnt, 0 = Team B gewinnt."""
-    df["team_a_won"] = (df["winner"] == df["team_a"]).astype(int)
-    return df
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Pipeline: Alles auf einmal
+# Haupt-Pipeline
 # ─────────────────────────────────────────────────────────────────────────────
 
 def build_features(df: pd.DataFrame, save: bool = True) -> tuple[pd.DataFrame, dict]:
     """
-    Führt alle Feature-Engineering-Schritte durch.
-
-    Args:
-        df:   Rohdaten (aus scraper oder kaggle_loader)
-        save: Ergebnis als CSV speichern
-
-    Returns:
-        df_feat:     DataFrame mit allen Features
-        elo_ratings: Aktuelle ELO-Ratings (für Predictions auf neuen Matches)
+    Bereitet den Feature-DataFrame vor.
+    Da das Kaggle-CSV bereits vorberechnete Stats enthält,
+    müssen wir hauptsächlich ELO ergänzen und Spalten absichern.
     """
     log.info("Starte Feature Engineering ...")
-    n = len(df)
+    df = df.sort_values("date").copy()
 
-    log.info("  1/7 ELO berechnen ...")
+    # 1. ELO berechnen (einzige dynamische Berechnung)
+    log.info("  ELO berechnen ...")
     df, elo_ratings = compute_elo(df)
 
-    log.info("  2/7 Winrates berechnen ...")
-    df = compute_winrates(df)
+    # 2. Sicherstellen dass alle Feature-Spalten vorhanden sind
+    df = _ensure_columns(df)
 
-    log.info("  3/7 Form berechnen ...")
-    df = compute_form(df)
+    # 3. Label sicherstellen
+    if "team_a_won" not in df.columns:
+        df["team_a_won"] = (df["winner"] == df["team_a"]).astype(int)
 
-    log.info("  4/7 Head-to-Head berechnen ...")
-    df = compute_h2h(df)
+    # 4. Auf sinnvolle Matches beschränken (keine NaN in Kern-Features)
+    core = ["rating_diff", "team_a_won", "date", "team_a", "team_b"]
+    df_feat = df.dropna(subset=core).reset_index(drop=True)
 
-    log.info("  5/7 Tage seit letztem Match ...")
-    df = compute_days_since_last(df)
+    # 5. Fehlende numerische Werte mit Median auffüllen
+    for col in FEATURES:
+        if col in df_feat.columns:
+            median = df_feat[col].median()
+            df_feat[col] = df_feat[col].fillna(median if not np.isnan(median) else 0)
 
-    log.info("  6/7 Map-Winrate & Ranking ...")
-    df = compute_map_winrate(df)
-    df = compute_ranking(df)
-    df = compute_lineup_age(df)
-
-    log.info("  7/7 Label hinzufügen ...")
-    df = add_label(df)
-
-    # Nur Matches mit allen Features behalten
-    from config import FEATURES
-    feat_cols = FEATURES + ["team_a_won", "date", "team_a", "team_b", "winner", "event"]
-    df_feat = df[[c for c in feat_cols if c in df.columns]].dropna(subset=FEATURES)
-
-    log.info(f"Feature Engineering abgeschlossen: {n} → {len(df_feat)} Matches")
+    log.info(f"Feature Engineering fertig: {len(df_feat)} Matches")
 
     if save:
         df_feat.to_csv(FEATURES_CSV, index=False)
-        log.info(f"Features gespeichert: {FEATURES_CSV}")
+        log.info(f"Gespeichert: {FEATURES_CSV}")
 
     return df_feat, elo_ratings
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Features für ein einzelnes neues Match berechnen
+# Features für ein zukünftiges Match
 # ─────────────────────────────────────────────────────────────────────────────
 
 def build_prediction_features(
@@ -342,51 +132,100 @@ def build_prediction_features(
     team_b: str,
     df_hist: pd.DataFrame,
     elo_ratings: dict,
-    pred_date: pd.Timestamp | None = None,
 ) -> dict:
     """
     Berechnet Features für ein noch nicht gespieltes Match.
-    Nutzt historische Daten + aktuelle ELO-Ratings.
+    Aggregiert die letzten bekannten Stats der beiden Teams.
     """
-    if pred_date is None:
-        pred_date = pd.Timestamp.now()
+    feats = {}
 
     ra = elo_ratings.get(team_a, ELO_START)
     rb = elo_ratings.get(team_b, ELO_START)
+    feats["elo_diff"] = ra - rb
 
-    return {
-        "elo_diff":             ra - rb,
-        "winrate_30d_diff":     _rolling_winrate(df_hist, team_a, pred_date, WINRATE_WINDOW)
-                               - _rolling_winrate(df_hist, team_b, pred_date, WINRATE_WINDOW),
-        "form_diff":            _recent_form(df_hist, team_a, pred_date, FORM_WINDOW)
-                               - _recent_form(df_hist, team_b, pred_date, FORM_WINDOW),
-        "h2h_winrate_a":        _h2h(df_hist, team_a, team_b, pred_date),
-        "ranking_diff":         (rb - ra) / 100,
-        "map_winrate_diff":     _rolling_winrate(df_hist, team_a, pred_date, WINRATE_WINDOW)
-                               - _rolling_winrate(df_hist, team_b, pred_date, WINRATE_WINDOW),
-        "days_since_last_diff": _days_since(df_hist, team_a, pred_date)
-                               - _days_since(df_hist, team_b, pred_date),
-        "lineup_age_diff":      0.0,  # Kann manuell gesetzt werden
-    }
+    # Letzte Matches von Team A und Team B
+    def last_matches(team, n=10):
+        mask = (df_hist["team_a"] == team) | (df_hist["team_b"] == team)
+        return df_hist.loc[mask].sort_values("date").tail(n)
 
+    last_a = last_matches(team_a)
+    last_b = last_matches(team_b)
 
-def _h2h(df: pd.DataFrame, ta: str, tb: str, before: pd.Timestamp) -> float:
-    cutoff = before - timedelta(days=H2H_WINDOW_DAYS)
-    mask = (
-        (df["date"] >= cutoff) & (df["date"] < before) &
-        (((df["team_a"] == ta) & (df["team_b"] == tb)) |
-         ((df["team_a"] == tb) & (df["team_b"] == ta)))
+    # Rating-Stats aus letzten Matches
+    def avg_stat(matches, team, col_winner, col_loser):
+        """Holt den Wert aus winner_* oder loser_* je nachdem ob das Team gewann."""
+        vals = []
+        for _, row in matches.iterrows():
+            won = row.get("winner", "") == team
+            col = col_winner if won else col_loser
+            v = row.get(col, np.nan)
+            if not np.isnan(float(v)) if v is not None else False:
+                vals.append(float(v))
+        return np.mean(vals) if vals else 0.0
+
+    # Winrates direkt aus letzten bekannten Zeilen
+    def latest_col(matches, col, fallback=0.5):
+        if col in matches.columns:
+            v = matches[col].dropna()
+            return float(v.iloc[-1]) if len(v) > 0 else fallback
+        return fallback
+
+    # Winrate
+    feats["team1_overall_winrate"] = latest_col(last_a[last_a["team_a"] == team_a], "team1_overall_winrate", 0.5)
+    feats["team2_overall_winrate"] = latest_col(last_b[last_b["team_a"] == team_b], "team1_overall_winrate", 0.5)
+    feats["winrate_diff"]          = feats["team1_overall_winrate"] - feats["team2_overall_winrate"]
+
+    feats["team1_lan_winrate"] = latest_col(last_a[last_a["team_a"] == team_a], "team1_lan_winrate", 0.5)
+    feats["team2_lan_winrate"] = latest_col(last_b[last_b["team_a"] == team_b], "team1_lan_winrate", 0.5)
+    feats["lan_winrate_diff"]  = feats["team1_lan_winrate"] - feats["team2_lan_winrate"]
+
+    # Rating-Diffs
+    for col in ["rating_diff", "adr_diff", "kast_diff", "kpr_diff", "dpr_diff"]:
+        vals_a = last_a[last_a["team_a"] == team_a][col].dropna() if col in last_a.columns else pd.Series()
+        feats[col] = float(vals_a.mean()) if len(vals_a) > 0 else 0.0
+
+    # H2H
+    cutoff = pd.Timestamp.now() - pd.Timedelta(days=H2H_WINDOW_DAYS)
+    h2h_mask = (
+        (df_hist["date"] >= cutoff) &
+        (((df_hist["team_a"] == team_a) & (df_hist["team_b"] == team_b)) |
+         ((df_hist["team_a"] == team_b) & (df_hist["team_b"] == team_a)))
     )
-    sub = df.loc[mask]
-    if len(sub) == 0:
-        return 0.5
-    return (sub["winner"] == ta).sum() / len(sub)
+    h2h_matches = df_hist.loc[h2h_mask]
+    if len(h2h_matches) > 0:
+        a_wins = (h2h_matches["winner"] == team_a).sum()
+        feats["winner_head2head_percentage"] = a_wins / len(h2h_matches)
+        feats["loser_head2head_percentage"]  = 1 - feats["winner_head2head_percentage"]
+        feats["h2h_diff"] = feats["winner_head2head_percentage"] - feats["loser_head2head_percentage"]
+    else:
+        feats["winner_head2head_percentage"] = 0.5
+        feats["loser_head2head_percentage"]  = 0.5
+        feats["h2h_diff"] = 0.0
 
+    # Past3
+    def past3(team):
+        m = last_matches(team, 3)
+        if len(m) == 0:
+            return 0.5
+        return (m["winner"] == team).sum() / len(m)
 
-def _days_since(df: pd.DataFrame, team: str, before: pd.Timestamp) -> int:
-    prev = df.loc[(df["date"] < before) &
-                  ((df["team_a"] == team) | (df["team_b"] == team)), "date"]
-    return (before - prev.max()).days if len(prev) > 0 else 14
+    feats["winner_past3"] = past3(team_a)
+    feats["loser_past3"]  = past3(team_b)
+    feats["past3_diff"]   = feats["winner_past3"] - feats["loser_past3"]
+
+    # Consistency & player advantage
+    for col in ["star_player_advantage", "weakest_link_advantage", "consistency_advantage",
+                "team1_rating_std", "team2_rating_std"]:
+        vals = last_a[last_a["team_a"] == team_a][col].dropna() if col in last_a.columns else pd.Series()
+        feats[col] = float(vals.mean()) if len(vals) > 0 else 0.0
+
+    # Map-Winrate-Diffs
+    for m in CS2_MAPS:
+        col = f"{m}_winrate_diff"
+        vals = last_a[last_a["team_a"] == team_a][col].dropna() if col in last_a.columns else pd.Series()
+        feats[col] = float(vals.mean()) if len(vals) > 0 else 0.0
+
+    return feats
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -396,11 +235,11 @@ if __name__ == "__main__":
     import argparse
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-    parser = argparse.ArgumentParser(description="Feature Engineering")
-    parser.add_argument("--input", type=str, default=str(Path(__file__).parent.parent / "data" / "matches_raw.csv"))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", default=str(Path(__file__).parent.parent / "data" / "matches_raw.csv"))
     args = parser.parse_args()
 
-    df_raw = pd.read_csv(args.input, parse_dates=["date"])
-    df_feat, elo = build_features(df_raw)
-    print(df_feat[["date", "team_a", "team_b", "elo_diff", "form_diff", "team_a_won"]].tail(10).to_string())
+    df = pd.read_csv(args.input, parse_dates=["date"])
+    df_feat, elo = build_features(df)
+    print(df_feat[["date", "team_a", "team_b", "elo_diff", "rating_diff", "team_a_won"]].tail(10))
     print(f"\nTop-5 ELO: {sorted(elo.items(), key=lambda x: -x[1])[:5]}")
