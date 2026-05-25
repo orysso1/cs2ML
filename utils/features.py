@@ -88,43 +88,157 @@ def _ensure_columns(df: pd.DataFrame) -> pd.DataFrame:
 def build_features(df: pd.DataFrame, save: bool = True) -> tuple[pd.DataFrame, dict]:
     """
     Bereitet den Feature-DataFrame vor.
-    Da das Kaggle-CSV bereits vorberechnete Stats enthält,
-    müssen wir hauptsächlich ELO ergänzen und Spalten absichern.
+    Unterstützt zwei Datenquellen automatisch:
+      - Kaggle-Daten: haben bereits rating_diff, adr_diff usw. vorberechnet
+      - PandaScore/GRID-Daten: haben nur team_a, team_b, winner, date
+        → fehlende Features werden aus dem Match-Verlauf berechnet
     """
     log.info("Starte Feature Engineering ...")
     df = df.sort_values("date").copy()
-    # Timezone entfernen — verhindert Vergleichsfehler mit pd.Timestamp
     if pd.api.types.is_datetime64tz_dtype(df["date"]):
         df["date"] = df["date"].dt.tz_convert(None)
 
-    # 1. ELO berechnen (einzige dynamische Berechnung)
-    log.info("  ELO berechnen ...")
-    df, elo_ratings = compute_elo(df)
-
-    # 2. Sicherstellen dass alle Feature-Spalten vorhanden sind
-    df = _ensure_columns(df)
-
-    # 3. Label sicherstellen
+    # Label sicherstellen
     if "team_a_won" not in df.columns:
         df["team_a_won"] = (df["winner"] == df["team_a"]).astype(int)
 
-    # 4. Auf sinnvolle Matches beschränken (keine NaN in Kern-Features)
-    core = ["rating_diff", "team_a_won", "date", "team_a", "team_b"]
-    df_feat = df.dropna(subset=core).reset_index(drop=True)
+    # 1. ELO berechnen
+    log.info("  1/4 ELO berechnen ...")
+    df, elo_ratings = compute_elo(df)
 
-    # 5. Fehlende numerische Werte mit Median auffüllen
+    # 2. Dynamische Features aus Match-Verlauf berechnen
+    #    (für PandaScore-Matches die keine vorberechneten Stats haben)
+    log.info("  2/4 Dynamische Features aus Match-Verlauf ...")
+    df = _compute_rolling_features(df)
+
+    # 3. Spalten absichern
+    df = _ensure_columns(df)
+
+    # 4. Matches ohne Label entfernen, fehlende Werte füllen
+    log.info("  3/4 Fehlende Werte auffüllen ...")
+    df = df.dropna(subset=["team_a_won", "date", "team_a", "team_b"])
+
+    # Für jedes Feature: fehlende Werte mit Median aus Kaggle-Matches füllen
+    # (Kaggle-Matches haben rating_diff etc., PandaScore-Matches nicht)
     for col in FEATURES:
-        if col in df_feat.columns:
-            median = df_feat[col].median()
-            df_feat[col] = df_feat[col].fillna(median if not np.isnan(median) else 0)
+        if col in df.columns and df[col].isna().any():
+            median = df[col].median()
+            df[col] = df[col].fillna(0 if np.isnan(median) else median)
 
-    log.info(f"Feature Engineering fertig: {len(df_feat)} Matches")
+    df = df.reset_index(drop=True)
+
+    # Statistik: wie viele Matches kommen von welcher Quelle
+    if "source" in df.columns:
+        src_counts = df["source"].value_counts().to_dict()
+        log.info(f"  4/4 Quellen: {src_counts}")
+    else:
+        log.info(f"  4/4 Feature Engineering fertig: {len(df)} Matches")
+
+    log.info(f"Gesamt: {len(df)} Matches mit {len(FEATURES)} Features")
 
     if save:
-        df_feat.to_csv(FEATURES_CSV, index=False)
+        df.to_csv(FEATURES_CSV, index=False)
         log.info(f"Gespeichert: {FEATURES_CSV}")
 
-    return df_feat, elo_ratings
+    return df, elo_ratings
+
+
+def _compute_rolling_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Berechnet Winrate, Form, H2H und Past3 dynamisch aus dem Match-Verlauf.
+    Füllt nur Zeilen wo diese Werte noch fehlen (NaN) — überschreibt
+    keine vorhandenen Kaggle-Stats.
+    """
+    df = df.sort_values("date").copy()
+
+    # Nur berechnen wenn Spalten fehlen oder leer sind
+    needs_winrate = "team1_overall_winrate" not in df.columns or df["team1_overall_winrate"].isna().all()
+    needs_past3   = "team1_past3" not in df.columns or df["team1_past3"].isna().all()
+    needs_h2h     = "team1_h2h_pct" not in df.columns or df["team1_h2h_pct"].isna().all()
+
+    if not (needs_winrate or needs_past3 or needs_h2h):
+        # Kaggle-Daten: alles schon vorhanden, nur NaN-Lücken füllen
+        _fill_missing_rolling(df)
+        return df
+
+    log.info("    Berechne Rolling-Features aus Match-Verlauf (PandaScore-Matches) ...")
+
+    wr_a_list, wr_b_list = [], []
+    p3_a_list, p3_b_list = [], []
+    h2h_list             = []
+
+    for i, row in df.iterrows():
+        d  = row["date"]
+        ta = row["team_a"]
+        tb = row["team_b"]
+        past = df[df["date"] < d]
+
+        # Winrate letzte 30 Tage
+        cutoff_30 = d - pd.Timedelta(days=30)
+        def winrate(team, since):
+            m = past[(past["date"] >= since) &
+                     ((past["team_a"] == team) | (past["team_b"] == team))]
+            if len(m) < 3: return np.nan
+            return ((m["winner"] == team).sum() / len(m))
+
+        wr_a_list.append(winrate(ta, cutoff_30))
+        wr_b_list.append(winrate(tb, cutoff_30))
+
+        # Past3
+        def past3(team):
+            m = past[(past["team_a"] == team) | (past["team_b"] == team)].tail(3)
+            if len(m) < 2: return np.nan
+            return (m["winner"] == team).sum() / len(m)
+
+        p3_a_list.append(past3(ta))
+        p3_b_list.append(past3(tb))
+
+        # H2H letzte 2 Jahre
+        cutoff_h2h = d - pd.Timedelta(days=730)
+        h2h = past[(past["date"] >= cutoff_h2h) &
+                   (((past["team_a"] == ta) & (past["team_b"] == tb)) |
+                    ((past["team_a"] == tb) & (past["team_b"] == ta)))]
+        if len(h2h) >= 2:
+            h2h_list.append((h2h["winner"] == ta).sum() / len(h2h))
+        else:
+            h2h_list.append(np.nan)
+
+    # Nur leere Zellen füllen (Kaggle-Werte nicht überschreiben)
+    def _fill_col(col, values):
+        if col not in df.columns:
+            df[col] = values
+        else:
+            df[col] = df[col].fillna(pd.Series(values, index=df.index))
+
+    _fill_col("team1_overall_winrate", wr_a_list)
+    _fill_col("team2_overall_winrate", wr_b_list)
+    _fill_col("winrate_diff",
+              [a - b if not (np.isnan(a) or np.isnan(b)) else np.nan
+               for a, b in zip(wr_a_list, wr_b_list)])
+    _fill_col("team1_past3", p3_a_list)
+    _fill_col("team2_past3", p3_b_list)
+    _fill_col("team1_h2h_pct", h2h_list)
+    _fill_col("team2_h2h_pct",
+              [1 - h if not np.isnan(h) else np.nan for h in h2h_list])
+
+    # LAN-Winrate: nutze overall als Proxy wenn nicht vorhanden
+    if "team1_lan_winrate" not in df.columns or df["team1_lan_winrate"].isna().all():
+        df["team1_lan_winrate"] = df.get("team1_overall_winrate", np.nan)
+        df["team2_lan_winrate"] = df.get("team2_overall_winrate", np.nan)
+        df["lan_winrate_diff"]  = df["team1_lan_winrate"] - df["team2_lan_winrate"]
+
+    return df
+
+
+def _fill_missing_rolling(df: pd.DataFrame) -> pd.DataFrame:
+    """Füllt nur die NaN-Lücken in Kaggle-Daten (z.B. neue PandaScore-Matches)."""
+    # Einfach: Median der vorhandenen Werte nutzen
+    for col in ["team1_overall_winrate", "team2_overall_winrate",
+                "team1_past3", "team2_past3", "team1_h2h_pct"]:
+        if col in df.columns:
+            m = df[col].median()
+            df[col] = df[col].fillna(m if not np.isnan(m) else 0.5)
+    return df
 
 
 # ─────────────────────────────────────────────────────────────────────────────

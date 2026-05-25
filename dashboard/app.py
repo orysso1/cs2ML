@@ -36,9 +36,153 @@ st.markdown("""
 def load_model_cached():
     try:
         from models.trainer import load_model
-        return load_model()          # model, elo_ratings, map_models
+        return load_model()
     except FileNotFoundError:
         return None, {}, {}
+
+
+def _check_model_updated() -> bool:
+    """Prüft ob auto_updater.py das Modell seit dem letzten Reload aktualisiert hat."""
+    from config import DATA_DIR
+    flag = DATA_DIR / ".model_updated"
+    if not flag.exists():
+        return False
+    session_ts = st.session_state.get("model_load_time", 0)
+    flag_ts    = flag.stat().st_mtime
+    return flag_ts > session_ts
+
+
+def _load_last_update_time():
+    """Liest den Zeitpunkt des letzten erfolgreichen Updates aus."""
+    import json, datetime as _dt
+    from config import DATA_DIR
+    status_file = DATA_DIR / "updater_status.json"
+    if not status_file.exists():
+        return None
+    try:
+        data = json.loads(status_file.read_text())
+        ts   = data.get("timestamp")
+        if ts:
+            return _dt.datetime.fromisoformat(ts.replace("Z", "+00:00")).replace(tzinfo=None)
+    except Exception:
+        pass
+    return None
+
+
+def _run_dashboard_update(days_back: int):
+    """Führt den Update-Prozess direkt im Dashboard aus (mit Fortschritts-Anzeige)."""
+    import datetime as _dt
+    from config import DATA_DIR
+
+    progress = st.sidebar.progress(0, text="Starte Update ...")
+    status   = st.sidebar.empty()
+
+    try:
+        # Schritt 1: Neue Matches holen
+        progress.progress(10, text="📡 Hole neue Matches ...")
+        new_matches = []
+
+        try:
+            from data.api_fetcher import (
+                fetch_past_matches, fetch_grid_stats,
+                PANDASCORE_KEY, GRID_KEY
+            )
+            if PANDASCORE_KEY:
+                status.info(f"PandaScore: lade letzte {days_back} Tage ...")
+                ps = fetch_past_matches(days_back=days_back)
+                new_matches.extend(ps)
+            if GRID_KEY:
+                status.info("GRID: lade aktuelle Stats ...")
+                gr = fetch_grid_stats(max_series=30)
+                new_matches.extend(gr)
+        except Exception as e:
+            status.warning(f"API-Fehler: {e} — fahre mit lokalen Daten fort")
+
+        progress.progress(35, text=f"✅ {len(new_matches)} Matches gefunden")
+
+        # Schritt 2: Mergen
+        if new_matches:
+            progress.progress(45, text="💾 Füge neue Matches ein ...")
+            from data.api_fetcher import merge_into_csv
+            from config import RAW_CSV
+            import pandas as pd
+
+            before = len(pd.read_csv(RAW_CSV)) if RAW_CSV.exists() else 0
+            merge_into_csv(new_matches, RAW_CSV)
+            after  = len(pd.read_csv(RAW_CSV)) if RAW_CSV.exists() else 0
+            added  = after - before
+            status.info(f"{added} neue Matches hinzugefügt (gesamt: {after})")
+        else:
+            added = 0
+            status.info("Keine neuen Matches von API — Re-Training mit vorhandenen Daten")
+
+        progress.progress(55, text="⚙️ Berechne Features ...")
+
+        # Schritt 3: Features + Training
+        from config import RAW_CSV, FEATURES_CSV
+        import pandas as pd
+
+        if not RAW_CSV.exists():
+            status.error("Keine Rohdaten vorhanden.")
+            progress.empty()
+            return
+
+        df_raw = pd.read_csv(RAW_CSV, parse_dates=["date"])
+        if pd.api.types.is_datetime64tz_dtype(df_raw["date"]):
+            df_raw["date"] = df_raw["date"].dt.tz_convert(None)
+
+        FEATURES_CSV.unlink(missing_ok=True)
+        from utils.features import build_features
+        df_feat, elo_ratings = build_features(df_raw, save=True)
+
+        progress.progress(75, text="🧠 Trainiere Modell ...")
+        from models.trainer import train, train_map_models, save_model, backtest
+        model, metrics, _, val_df = train(df_feat)
+        map_models = train_map_models(df_feat)
+        bt = backtest(model, val_df)
+        bt.to_csv(DATA_DIR / "backtest_results.csv", index=False)
+        save_model(model, elo_ratings, map_models)
+
+        progress.progress(90, text="📅 Lade Upcoming Matches ...")
+        try:
+            from data.api_fetcher import fetch_upcoming_matches, save_upcoming, PANDASCORE_KEY
+            if PANDASCORE_KEY:
+                upcoming = fetch_upcoming_matches()
+                save_upcoming(upcoming)
+        except Exception:
+            pass
+
+        # Timestamp speichern
+        import json
+        status_data = {
+            "timestamp":   _dt.datetime.now(_dt.timezone.utc).isoformat(),
+            "new_matches": added,
+            "retrained":   True,
+            "val_accuracy": metrics.get("val_accuracy", 0),
+            "errors":      [],
+        }
+        (DATA_DIR / "updater_status.json").write_text(json.dumps(status_data, indent=2))
+        (DATA_DIR / ".model_updated").write_text(_dt.datetime.now(_dt.timezone.utc).isoformat())
+
+        progress.progress(100, text="✅ Update abgeschlossen!")
+        acc = metrics.get("val_accuracy", 0)
+        status.success(
+            f"✅ Fertig! {added} neue Matches · "
+            f"Val-Accuracy: {acc:.1%}"
+        )
+
+        # Cache leeren damit Dashboard neue Daten lädt
+        st.cache_resource.clear()
+        st.cache_data.clear()
+        import time as _time
+        _time.sleep(1.5)
+        st.rerun()
+
+    except Exception as e:
+        progress.empty()
+        status.error(f"❌ Update fehlgeschlagen: {e}")
+        import traceback
+        st.sidebar.code(traceback.format_exc(), language="text")
 
 
 @st.cache_data(show_spinner="Lade Daten ...")
@@ -182,11 +326,38 @@ def main():
         page = st.radio("Navigation", [
             "🏠 Match Prediction",
             "🗺️ Map Prediction",
+            "📅 Upcoming Matches",
             "📊 Model Performance",
             "👥 Team Analyse",
             "📋 Match Historie",
             "⚙️ Setup",
         ])
+        st.markdown("---")
+        st.session_state.setdefault("model_load_time", __import__("time").time())
+
+        # ── Update-Button ─────────────────────────────────────────────────────
+        last_update_ts = _load_last_update_time()
+        if last_update_ts:
+            import datetime as _dt
+            last_str = last_update_ts.strftime("%d.%m.%Y %H:%M")
+            days_since = (_dt.datetime.now() - last_update_ts).days
+            st.caption(f"🕐 Letztes Update: {last_str}")
+        else:
+            days_since = 30
+            st.caption("🕐 Noch kein Update")
+
+        if st.button("⬆️ Daten & Modell aktualisieren", type="primary", use_container_width=True):
+            _run_dashboard_update(days_since if days_since > 0 else 1)
+
+        # Modell-Update-Banner
+        if _check_model_updated():
+            st.warning("⚡ Neues Modell verfügbar!")
+            if st.button("🔄 Modell neu laden", use_container_width=True):
+                st.cache_resource.clear()
+                st.cache_data.clear()
+                st.session_state["model_load_time"] = __import__("time").time()
+                st.rerun()
+
         st.markdown("---")
         if model:
             st.success("✅ Match-Modell geladen")
@@ -353,6 +524,73 @@ def main():
                                 })
                     if map_hist_rows:
                         st.dataframe(pd.DataFrame(map_hist_rows), use_container_width=True, hide_index=True)
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # SEITE: Upcoming Matches
+    # ═════════════════════════════════════════════════════════════════════════
+    elif page == "📅 Upcoming Matches":
+        st.title("📅 Upcoming Matches")
+        st.markdown("Kommende CS2 Pro-Matches mit ML-Prediction.")
+
+        from config import DATA_DIR
+        upcoming_csv = DATA_DIR / "upcoming_matches.csv"
+
+        if st.button("🔄 Daten aktualisieren (PandaScore)", use_container_width=False):
+            with st.spinner("Lade von PandaScore ..."):
+                try:
+                    from data.api_fetcher import fetch_upcoming_matches, save_upcoming
+                    upcoming_new = fetch_upcoming_matches()
+                    save_upcoming(upcoming_new)
+                    st.success(f"{len(upcoming_new)} Matches geladen!")
+                    st.cache_data.clear()
+                except Exception as e:
+                    st.error(f"Fehler: {e}. Prüfe PANDASCORE_API_KEY in .env")
+
+        if not upcoming_csv.exists():
+            st.info("Noch keine Upcoming-Daten.")
+            st.code("python data/api_fetcher.py --fetch-upcoming")
+        else:
+            df_up = pd.read_csv(upcoming_csv, parse_dates=["date"])
+            df_up = df_up[df_up["date"] >= pd.Timestamp.now() - pd.Timedelta(hours=2)]
+            df_up = df_up.sort_values("date")
+
+            if len(df_up) == 0:
+                st.info("Keine kommenden Matches. Bitte aktualisieren.")
+            else:
+                st.info(f"{len(df_up)} kommende Matches")
+                pred_rows = []
+                df_src = df_raw if df_raw is not None else df_feat
+
+                for _, row in df_up.iterrows():
+                    ta, tb = str(row.get("team_a","?")), str(row.get("team_b","?"))
+                    prob_a, prob_b = 0.5, 0.5
+                    if model is not None and ta not in ("TBD","?") and tb not in ("TBD","?") and df_src is not None:
+                        try:
+                            from utils.features import build_prediction_features
+                            from models.trainer import predict_match as _pm
+                            feats  = build_prediction_features(ta, tb, df_src, elo_ratings)
+                            res    = _pm(model, feats)
+                            prob_a, prob_b = res["prob_a"], res["prob_b"]
+                        except Exception:
+                            pass
+
+                    conf  = abs(prob_a - 0.5) * 2
+                    fav   = ta if prob_a >= prob_b else tb
+                    cl    = ("⚡ Sehr sicher" if conf >= 0.5 else
+                             "✅ Sicher"      if conf >= 0.3 else "~ Neutral")
+                    pred_rows.append({
+                        "Datum":     row["date"].strftime("%m-%d %H:%M") if pd.notna(row["date"]) else "",
+                        "Team A":    ta,
+                        "Win% A":    f"{prob_a:.1%}",
+                        "Team B":    tb,
+                        "Win% B":    f"{prob_b:.1%}",
+                        "Favorit":   fav,
+                        "Chance":    f"{max(prob_a,prob_b):.1%}",
+                        "Konfidenz": cl,
+                        "Event":     str(row.get("event",""))[:30],
+                    })
+
+                st.dataframe(pd.DataFrame(pred_rows), use_container_width=True, hide_index=True)
 
     # ═════════════════════════════════════════════════════════════════════════
     # SEITE: Model Performance
