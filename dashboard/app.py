@@ -327,6 +327,7 @@ def main():
             "🏠 Match Prediction",
             "🗺️ Map Prediction",
             "📅 Upcoming Matches",
+            "💰 Value Betting",
             "📊 Model Performance",
             "👥 Team Analyse",
             "📋 Match Historie",
@@ -591,6 +592,13 @@ def main():
                     })
 
                 st.dataframe(pd.DataFrame(pred_rows), use_container_width=True, hide_index=True)
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # SEITE: Value Betting
+    # ═════════════════════════════════════════════════════════════════════════
+    elif page == "💰 Value Betting":
+        from dashboard.value_betting import render as render_vb
+        render_vb(model, elo_ratings, df_raw, df_feat, teams)
 
     # ═════════════════════════════════════════════════════════════════════════
     # SEITE: Model Performance

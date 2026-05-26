@@ -1,148 +1,104 @@
 match_id,date,team_a,team_b,event,tournament,match_type,status,stream_url,source
-ps_1498605,2026-05-25 08:50:00,Athlon,Oxuji Esports,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/kartash0v,pandascore
-ps_1498604,2026-05-25 08:50:00,SPARTA,Nuclear TigeRES,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1499185,2026-05-25 10:30:00,Prestige,MANA eSports,United21,Season 49 2026,best_of,not_started,https://kick.com/united21_en,pandascore
-ps_1489291,2026-05-25 11:00:00,Leo Team,GenOne,CCT Europe,Series 2 2026,best_of,not_started,https://www.twitch.tv/betboom_cs_ru4,pandascore
-ps_1498240,2026-05-25 11:00:00,ex-RUBY,Ursa,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://kick.com/bcgamemasters,pandascore
-ps_1500243,2026-05-25 11:00:00,TNC,ex-Zero Tenacity,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/tncesport,pandascore
-ps_1493105,2026-05-25 11:00:00,BIG Academy,Kinoa,European Pro League,Regular season 5 2026,best_of,not_started,https://www.twitch.tv/freezecs7,pandascore
-ps_1504008,2026-05-25 11:00:00,EC BANGA,Julie&cie,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS5,pandascore
-ps_1504701,2026-05-25 11:00:00,Lavked,Phantom,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1507108,2026-05-25 11:00:00,ASTRAL,brazylijski luz,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://www.twitch.tv/sigmacast2,pandascore
-ps_1504007,2026-05-25 11:00:00,SAW,Subtop De France,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://www.twitch.tv/minicasterr,pandascore
-ps_1498606,2026-05-25 12:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1508059,2026-05-25 12:30:00,Athlon,Vortex CGO,Exort Series,Season 27 2026,best_of,not_started,https://kick.com/exort_en2,pandascore
-ps_1508598,2026-05-25 13:00:00,Kaleido Gaming,Ground Zero,ESL Challenger League,Asia-Pacific Finals season 51 2026,best_of,not_started,,pandascore
-ps_1499182,2026-05-25 13:30:00,ALGO Esports,NAVI Junior,United21,Season 49 2026,best_of,not_started,https://kick.com/united21_en,pandascore
-ps_1504013,2026-05-25 13:45:00,Hashiras,NEW VISION,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS5,pandascore
-ps_1504009,2026-05-25 13:45:00,ENJOY,Dripmen,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/cct_cs4,pandascore
-ps_1489292,2026-05-25 14:00:00,Phantom,Brute,CCT Europe,Series 2 2026,best_of,not_started,https://www.twitch.tv/betboom_cs_ru4,pandascore
-ps_1500247,2026-05-25 14:00:00,VRSDelivery,Rune Eaters,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1498241,2026-05-25 14:00:00,HEROIC Academy,Rune Eaters,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/alrumtv,pandascore
-ps_1507109,2026-05-25 14:00:00,MANA eSports,Falcons Force,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://www.twitch.tv/sigmacast2,pandascore
-ps_1504702,2026-05-25 14:00:00,Leo Team,ex-Zero Tenacity,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1463405,2026-05-25 14:30:00,ENCE,cirahvi,Elisa Open Suomi,Season 13 2026,best_of,not_started,https://www.twitch.tv/elisaviihdesport,pandascore
-ps_1503438,2026-05-25 15:00:00,Sashi Academy,Invicta,Dust2.dk Ligaen,Season 32 2026,best_of,not_started,https://www.twitch.tv/dust2tv,pandascore
-ps_1498613,2026-05-25 15:00:00,WW Team,Tricksters,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/kartash0v,pandascore
-ps_1498612,2026-05-25 15:00:00,K27,PsychoFace,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1508060,2026-05-25 15:30:00,Oldboys,Melilla Titans,Exort Series,Season 27 2026,best_of,not_started,https://kick.com/exort_en2,pandascore
-ps_1498242,2026-05-25 17:00:00,ASTRAL,ex-Zero Tenacity,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/alrumtv,pandascore
-ps_1463408,2026-05-25 17:00:00,KUUSAMO.gg,TOOMUCHVIDEOGAMES,Elisa Open Suomi,Season 13 2026,best_of,not_started,https://www.twitch.tv/elisaviihdesport,pandascore
-ps_1489293,2026-05-25 17:00:00,ALGO Esports,Just Players,CCT Europe,Series 2 2026,best_of,not_started,https://www.twitch.tv/jester_andrew,pandascore
-ps_1500248,2026-05-25 17:00:00,HyperSpirit,Bebop,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/karmaflexxx,pandascore
-ps_1504703,2026-05-25 17:00:00,ex-RUBY,Rune Eaters,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1507110,2026-05-25 17:00:00,G2 Ares,Lilmix,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
-ps_1469279,2026-05-25 17:45:00,OKSUCC,SSSghoul,UKIC,Masters Division season 10 2026,best_of,not_started,https://www.twitch.tv/UKICircuit,pandascore
-ps_1508062,2026-05-25 18:00:00,largadosypelados,RED Canids Academy,Gamers Club Liga Série A,May 2026,best_of,not_started,,pandascore
-ps_1503443,2026-05-25 18:00:00,Team Eclipse,Evo Novo,Dust2.dk Ligaen,Season 32 2026,best_of,not_started,,pandascore
-ps_1502448,2026-05-25 18:00:00,9daplug,QUINTESSÊNCIA,Gamers Club Liga Série A,May 2026,best_of,not_started,,pandascore
-ps_1498615,2026-05-25 18:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1498614,2026-05-25 18:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1508061,2026-05-25 18:30:00,eSuba,Drama eSports,Exort Series,Season 27 2026,best_of,not_started,https://kick.com/exort_en2,pandascore
-ps_1498616,2026-05-25 21:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1508620,2026-05-25 21:00:00,MIBR Academy,paiN Academy,Gamers Club Liga Série A,May 2026,best_of,not_started,,pandascore
-ps_1503444,2026-05-25 22:00:00,ALKA GAMING,METANOIA WOLVES,Gamers Club Liga Série A,May 2026,best_of,not_started,,pandascore
-ps_1498608,2026-05-26 06:00:00,ARCRED,163NEWS,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1498607,2026-05-26 06:00:00,BET-M 33,Aurora Young Blood,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1504704,2026-05-26 08:00:00,Rebels Gaming,ASTRAL,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1504681,2026-05-26 08:00:00,ENCE,CYBERSHOKE Prospects,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
-ps_1500244,2026-05-26 08:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1499184,2026-05-26 08:00:00,TBD,TBD,United21,Season 49 2026,best_of,not_started,https://kick.com/united21_en,pandascore
-ps_1498609,2026-05-26 09:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1498610,2026-05-26 09:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1504682,2026-05-26 10:30:00,UNiTY esports,Atreides,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1510113,2026-05-26 11:00:00,Entropy,G2 Ares,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
 ps_1504705,2026-05-26 11:00:00,HEROIC Academy,TNC,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1504012,2026-05-26 11:00:00,Donstu Esports,Bushido Wildcats,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
-ps_1504011,2026-05-26 11:00:00,Vexar,Lilmix,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
-ps_1500249,2026-05-26 11:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1498244,2026-05-26 11:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://kick.com/bcgamemasters,pandascore
-ps_1489294,2026-05-26 11:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
+ps_1504012,2026-05-26 11:00:00,Donstu Esports,Bushido Wildcats,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS5,pandascore
+ps_1504011,2026-05-26 11:00:00,Vexar,Lilmix,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS5,pandascore
+ps_1500249,2026-05-26 11:00:00,Rune Eaters,Bebop,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1489294,2026-05-26 11:00:00,Oramond,Leo Team,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1498611,2026-05-26 12:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
-ps_1508596,2026-05-26 13:00:00,TYLOO,TBD,ESL Challenger League,Asia-Pacific Finals season 51 2026,best_of,not_started,,pandascore
+ps_1510109,2026-05-26 12:30:00,Pitstop crew,Diamant Esports,Exort Series,Season 27 2026,best_of,not_started,https://kick.com/exort_en2,pandascore
+ps_1508596,2026-05-26 13:00:00,TYLOO,Kaleido Gaming,ESL Challenger League,Asia-Pacific Finals season 51 2026,best_of,not_started,,pandascore
+ps_1504014,2026-05-26 13:45:00,G2 Ares,Misa Esports,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS5,pandascore
 ps_1504010,2026-05-26 13:45:00,brazylijski luz,Project 91,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS5,pandascore
-ps_1504014,2026-05-26 13:45:00,G2 Ares,Misa Esports,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
+ps_1510114,2026-05-26 14:00:00,RUSTEC,Lilmix,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
 ps_1504706,2026-05-26 14:00:00,Oramond,HAVU,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1500245,2026-05-26 14:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1498245,2026-05-26 14:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://kick.com/bcgamemasters,pandascore
-ps_1489295,2026-05-26 14:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
+ps_1500245,2026-05-26 14:00:00,2007,ex-Zero Tenacity,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1498245,2026-05-26 14:00:00,GenOne,ASTRAL,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://kick.com/bcgamemasters,pandascore
+ps_1498244,2026-05-26 14:00:00,fnatic,Rune Eaters,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://kick.com/bcgamemasters,pandascore
+ps_1489295,2026-05-26 14:00:00,AM Gaming,Lazer Cats,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1498618,2026-05-26 15:00:00,CYBERSHOKE Esports,Dark Moon,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1498617,2026-05-26 15:00:00,1WIN,Virtus.pro,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
+ps_1510110,2026-05-26 15:30:00,Melilla Titans,eSuba,Exort Series,Season 27 2026,best_of,not_started,https://kick.com/exort_en2,pandascore
 ps_1469280,2026-05-26 16:00:00,Dripmen,The Last Resort,UKIC,Masters Division season 10 2026,best_of,not_started,https://www.twitch.tv/UKICircuit,pandascore
+ps_1510116,2026-05-26 17:00:00,ASTRAL,MANA eSports,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
+ps_1508602,2026-05-26 17:00:00,Team Nemesis,INOX Division,ESL Challenger League,Europe Finals season 51 2026,best_of,not_started,https://www.twitch.tv/lorranbs_,pandascore
 ps_1504707,2026-05-26 17:00:00,KOLESIE,Bushido Wildcats,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1489296,2026-05-26 17:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
-ps_1498246,2026-05-26 17:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://kick.com/bcgamemasters,pandascore
-ps_1508602,2026-05-26 17:00:00,Team Nemesis,INOX Division,ESL Challenger League,Europe Finals season 51 2026,best_of,not_started,,pandascore
-ps_1500250,2026-05-26 17:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1500250,2026-05-26 17:00:00,VRSDelivery,HyperSpirit,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1498246,2026-05-26 17:00:00,ex-RUBY,PsychoFace,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://kick.com/bcgamemasters,pandascore
+ps_1489296,2026-05-26 17:00:00,ALGO Esports,Brute,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1498620,2026-05-26 18:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1498619,2026-05-26 18:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
+ps_1510111,2026-05-26 18:30:00,Vortex CGO,HAVENs,Exort Series,Season 27 2026,best_of,not_started,https://kick.com/exort_en2,pandascore
 ps_1502450,2026-05-26 20:00:00,FURIA fe,Martians,Gamers Club Liga Série A,May 2026,best_of,not_started,,pandascore
+ps_1510112,2026-05-26 20:00:00,Guara Esports,ODDIK Academy,Gamers Club Liga Série A,May 2026,best_of,not_started,,pandascore
 ps_1498621,2026-05-26 21:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1508600,2026-05-27 01:00:00,M80,Iowa Stormboar,ESL Challenger League,North America Finals season 51 2026,best_of,not_started,,pandascore
-ps_1489297,2026-05-27 08:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
-ps_1499183,2026-05-27 08:00:00,TBD,TBD,United21,Season 49 2026,best_of,not_started,https://kick.com/united21_en,pandascore
-ps_1500236,2026-05-27 08:00:00,Hashiras,Esport Academy Copenhagen,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1504683,2026-05-27 08:00:00,HEROIC Academy,GenOne,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504708,2026-05-27 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1504683,2026-05-27 08:00:00,HEROIC Academy,GenOne,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1500236,2026-05-27 08:00:00,Hashiras,Esport Academy Copenhagen,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1499183,2026-05-27 08:00:00,ALGO Esports,TBD,United21,Season 49 2026,best_of,not_started,https://kick.com/united21_en,pandascore
+ps_1489297,2026-05-27 08:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1498622,2026-05-27 09:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1479967,2026-05-27 10:00:00,3DMAX,magic,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
 ps_1504684,2026-05-27 10:30:00,Donstu Esports,brazylijski luz,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
-ps_1489298,2026-05-27 11:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
-ps_1504015,2026-05-27 11:00:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
-ps_1500241,2026-05-27 11:00:00,ASTRAL,ALGO Esports,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1504709,2026-05-27 11:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1504016,2026-05-27 11:00:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
+ps_1504016,2026-05-27 11:00:00,Julie&cie,Hashiras,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
+ps_1504015,2026-05-27 11:00:00,SAW,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
+ps_1500241,2026-05-27 11:00:00,ASTRAL,ALGO Esports,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1489298,2026-05-27 11:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1498623,2026-05-27 12:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1479969,2026-05-27 12:30:00,Heroic,NIP,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
 ps_1508597,2026-05-27 13:00:00,SemperFi Esports,THUNDER dOWNUNDER,ESL Challenger League,Asia-Pacific Finals season 51 2026,best_of,not_started,,pandascore
 ps_1504687,2026-05-27 13:30:00,Young Ninjas,Lilmix,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504017,2026-05-27 13:45:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
-ps_1504018,2026-05-27 13:45:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
-ps_1500246,2026-05-27 14:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1489299,2026-05-27 14:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
+ps_1504018,2026-05-27 13:45:00,Dripmen,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
 ps_1508606,2026-05-27 14:00:00,BESTIA,25 cents,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1504710,2026-05-27 14:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1500246,2026-05-27 14:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1489299,2026-05-27 14:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1498624,2026-05-27 15:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1479968,2026-05-27 15:00:00,FaZe,Alliance,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
+ps_1500251,2026-05-27 17:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1504711,2026-05-27 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1489300,2026-05-27 17:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1508607,2026-05-27 17:00:00,Galorys,largadosypelados,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1508603,2026-05-27 17:00:00,TDK,Nemiga,ESL Challenger League,Europe Finals season 51 2026,best_of,not_started,,pandascore
-ps_1504711,2026-05-27 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1500251,2026-05-27 17:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1489300,2026-05-27 17:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1479970,2026-05-27 17:30:00,9z,Sharks,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
 ps_1498625,2026-05-27 18:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1508610,2026-05-27 20:00:00,Bounty Hunters Esports,Game Hunters,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1508611,2026-05-27 23:00:00,Fluxo,Black Belt,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1508601,2026-05-28 01:00:00,Chicken Coop Esports,Voca,ESL Challenger League,North America Finals season 51 2026,best_of,not_started,,pandascore
-ps_1507111,2026-05-28 08:00:00,INOX Division,ex-Zero Tenacity,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
-ps_1504712,2026-05-28 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1504685,2026-05-28 08:00:00,Project 91,WAZABI,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1489301,2026-05-28 08:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1501210,2026-05-28 08:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1497665,2026-05-28 08:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
-ps_1489301,2026-05-28 08:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
+ps_1504712,2026-05-28 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1507111,2026-05-28 08:00:00,INOX Division,ex-Zero Tenacity,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
+ps_1504685,2026-05-28 08:00:00,Project 91,WAZABI,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1498626,2026-05-28 09:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1479979,2026-05-28 10:00:00,TBD,TBD,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
 ps_1504686,2026-05-28 10:30:00,Oramond,Entropy,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1497666,2026-05-28 11:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
 ps_1507112,2026-05-28 11:00:00,against All authority,UNiTY esports,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
 ps_1504713,2026-05-28 11:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1504020,2026-05-28 11:00:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
 ps_1504019,2026-05-28 11:00:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
 ps_1501211,2026-05-28 11:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1497666,2026-05-28 11:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
 ps_1489302,2026-05-28 11:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1498627,2026-05-28 12:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1479980,2026-05-28 12:30:00,TBD,TBD,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
 ps_1508595,2026-05-28 13:00:00,TBD,TBD,ESL Challenger League,Asia-Pacific Finals season 51 2026,best_of,not_started,,pandascore
-ps_1504022,2026-05-28 13:45:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
-ps_1504021,2026-05-28 13:45:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
+ps_1504022,2026-05-28 13:45:00,NEW VISION,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
+ps_1504021,2026-05-28 13:45:00,ENJOY,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
 ps_1508608,2026-05-28 14:00:00,TBD,TBD,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1507113,2026-05-28 14:00:00,Young Ninjas,WAZABI,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
 ps_1504714,2026-05-28 14:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1501212,2026-05-28 14:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1497667,2026-05-28 14:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
 ps_1489303,2026-05-28 14:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
-ps_1498628,2026-05-28 15:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1479971,2026-05-28 15:00:00,TBD,TBD,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
 ps_1503439,2026-05-28 15:00:00,struggletony,AaB Bulls,Dust2.dk Ligaen,Season 32 2026,best_of,not_started,https://www.twitch.tv/dust2tv,pandascore
+ps_1498628,2026-05-28 15:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1508609,2026-05-28 17:00:00,TBD,TBD,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1508604,2026-05-28 17:00:00,TBD,TBD,ESL Challenger League,Europe Finals season 51 2026,best_of,not_started,,pandascore
 ps_1507114,2026-05-28 17:00:00,Phantom,Atreides,NODWIN Clutch Series,Season 9 2026,best_of,not_started,https://kick.com/nodwin_cs2,pandascore
@@ -153,18 +109,18 @@ ps_1489304,2026-05-28 17:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_star
 ps_1479972,2026-05-28 17:30:00,TBD,TBD,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
 ps_1498629,2026-05-28 18:00:00,TBD,TBD,CIS LAN Championship,Season 5 2026,best_of,not_started,https://www.twitch.tv/mpkbk,pandascore
 ps_1503441,2026-05-28 18:00:00,MASQ,Linx Legacy Esport,Dust2.dk Ligaen,Season 32 2026,best_of,not_started,https://www.twitch.tv/dust2tv,pandascore
-ps_1469307,2026-05-28 19:30:00,TBD,TBD,UKIC,Masters Division season 10 2026,best_of,not_started,https://www.twitch.tv/UKICircuit,pandascore
+ps_1469307,2026-05-28 19:30:00,OKSUCC,TBD,UKIC,Masters Division season 10 2026,best_of,not_started,https://www.twitch.tv/UKICircuit,pandascore
 ps_1508612,2026-05-28 20:00:00,TBD,TBD,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1508605,2026-05-28 21:00:00,ShindeN,Imperial,ESL Challenger League,South America Finals season 51 2026,best_of,not_started,,pandascore
 ps_1508613,2026-05-28 23:00:00,TBD,TBD,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1508599,2026-05-29 01:00:00,TBD,TBD,ESL Challenger League,North America Finals season 51 2026,best_of,not_started,,pandascore
+ps_1504716,2026-05-29 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1504688,2026-05-29 08:00:00,Misa Esports,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1501214,2026-05-29 08:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1497669,2026-05-29 08:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
-ps_1504716,2026-05-29 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1504688,2026-05-29 08:00:00,TBD,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1489305,2026-05-29 08:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1479978,2026-05-29 10:00:00,TBD,TBD,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
-ps_1504689,2026-05-29 10:30:00,TBD,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1504689,2026-05-29 10:30:00,TNC,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504717,2026-05-29 11:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1504023,2026-05-29 11:00:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
 ps_1501215,2026-05-29 11:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
@@ -177,25 +133,26 @@ ps_1497671,2026-05-29 14:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2
 ps_1504718,2026-05-29 14:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1501216,2026-05-29 14:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1479973,2026-05-29 15:00:00,TBD,TBD,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
-ps_1497672,2026-05-29 17:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
+ps_1510161,2026-05-29 17:00:00,ENJOY,ReThink,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
 ps_1508615,2026-05-29 17:00:00,TBD,TBD,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1504719,2026-05-29 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1501217,2026-05-29 17:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1497672,2026-05-29 17:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
 ps_1489308,2026-05-29 17:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1479976,2026-05-29 17:30:00,TBD,TBD,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
 ps_1508614,2026-05-29 20:00:00,TBD,TBD,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
+ps_1497673,2026-05-30 08:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
+ps_1501218,2026-05-30 08:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1504720,2026-05-30 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1504690,2026-05-30 08:00:00,TBD,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
-ps_1501218,2026-05-30 08:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
-ps_1497673,2026-05-30 08:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
 ps_1489309,2026-05-30 10:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1504691,2026-05-30 10:30:00,TBD,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1497674,2026-05-30 11:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
-ps_1501219,2026-05-30 11:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1504721,2026-05-30 11:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1501219,2026-05-30 11:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1504025,2026-05-30 11:00:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
-ps_1489310,2026-05-30 13:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1479975,2026-05-30 13:00:00,TBD,TBD,Stake Ranked,Episode 2 2026,best_of,not_started,https://kick.com/starladder,pandascore
+ps_1489310,2026-05-30 13:00:00,TBD,TBD,CCT Europe,Series 2 2026,best_of,not_started,https://kick.com/cct_cs2,pandascore
 ps_1504026,2026-05-30 13:45:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
 ps_1504722,2026-05-30 14:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1501220,2026-05-30 14:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
@@ -208,11 +165,26 @@ ps_1504723,2026-05-30 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_star
 ps_1501221,2026-05-30 17:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
 ps_1497828,2026-05-30 17:00:00,Team AceZone,Esport BERG,DACH CS Masters,Season 5 2026,best_of,not_started,https://www.twitch.tv/dach_cs2,pandascore
 ps_1497676,2026-05-30 17:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
+ps_1510155,2026-05-30 17:30:00,Arch,FC Famalicão Esports,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510154,2026-05-30 17:30:00,Bushido Wildcats,Banger Gang,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510156,2026-05-30 17:30:00,OldBoys,OLDBOYS PL,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510152,2026-05-30 17:30:00,Fire Flux Esports,Aurora Young Blood,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510151,2026-05-30 17:30:00,Donstu Esports,Project 91,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510153,2026-05-30 17:30:00,NEW VISION,JUMBO TEAM,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510157,2026-05-30 17:30:00,LFO,Wingman,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510166,2026-05-30 17:30:00,eternal premium,TEAM_COPH9K,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510159,2026-05-30 17:30:00,B8 Academy,tincan,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510165,2026-05-30 17:30:00,QUAZAR,ex-PeeP,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510164,2026-05-30 17:30:00,CYBERSHOKE Prospects,Falcons Force,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510158,2026-05-30 17:30:00,G2 Ares,ENRAGE,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510162,2026-05-30 17:30:00,VP.Prodigy,bankaPEPSI,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510160,2026-05-30 17:30:00,ROUNDS,XI Esport,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
+ps_1510163,2026-05-30 17:30:00,Misa Esports,ZOTIX,ESEA,Advanced Europe season 57 2026,best_of,not_started,,pandascore
 ps_1487705,2026-05-30 19:00:00,Yawara Esports,UNO MILLE,Odyssey Cup,Brazil 2026,best_of,not_started,,pandascore
 ps_1508616,2026-05-30 20:00:00,TBD,TBD,Circuit X Base Recife,2026,best_of,not_started,https://www.twitch.tv/circuitxofficial,pandascore
 ps_1504692,2026-05-31 08:00:00,TBD,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
-ps_1497678,2026-05-31 10:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
 ps_1501222,2026-05-31 10:00:00,TBD,TBD,Thunderpick World Championship,European Series #1 2026,best_of,not_started,https://www.twitch.tv/thunderpicktv,pandascore
+ps_1497678,2026-05-31 10:00:00,TBD,TBD,BC Game Masters,Europe Series #2 season 2 2026,best_of,not_started,https://www.twitch.tv/bcgamemasters,pandascore
 ps_1504693,2026-05-31 10:30:00,TBD,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504724,2026-05-31 11:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1504027,2026-05-31 11:00:00,TBD,TBD,CCT Europe,Challengers Series season 3 2026,best_of,not_started,https://kick.com/CCT_CS6,pandascore
@@ -236,24 +208,24 @@ ps_1503442,2026-06-01 15:00:00,Fortress,L.820,Dust2.dk Ligaen,Season 32 2026,bes
 ps_1504729,2026-06-01 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1503440,2026-06-01 18:00:00,MASONIC,STATE,Dust2.dk Ligaen,Season 32 2026,best_of,not_started,https://www.twitch.tv/dust2tv,pandascore
 ps_1504696,2026-06-02 08:00:00,TBD,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,,pandascore
+ps_1494586,2026-06-02 10:30:00,GamerLegion,NRG,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1494587,2026-06-02 10:30:00,B8,TYLOO,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1494589,2026-06-02 10:30:00,BIG,Liquid,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1494588,2026-06-02 10:30:00,BetBoom Team,Gaimin Gladiators,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1494590,2026-06-02 10:30:00,M80,Lynn Vision,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1494592,2026-06-02 10:30:00,MIBR,THUNDER dOWNUNDER,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1494593,2026-06-02 10:30:00,Heroic,Sharks,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504697,2026-06-02 10:30:00,TBD,TBD,European Pro League,Series 7 Closed Qualifier 2026,best_of,not_started,,pandascore
+ps_1494591,2026-06-02 10:30:00,Sinners,FlyQuest,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504730,2026-06-02 11:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1494588,2026-06-02 12:00:00,BetBoom Team,Gaimin Gladiators,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1494587,2026-06-02 12:00:00,B8,TYLOO,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1494589,2026-06-02 12:00:00,BIG,Liquid,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1494586,2026-06-02 12:00:00,GamerLegion,NRG,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1494591,2026-06-02 12:00:00,Sinners,FlyQuest,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1494592,2026-06-02 12:00:00,MIBR,THUNDER dOWNUNDER,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1494593,2026-06-02 12:00:00,Heroic,Sharks,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1494590,2026-06-02 12:00:00,M80,Lynn Vision,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504731,2026-06-02 14:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1508622,2026-06-02 15:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508621,2026-06-02 15:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1508624,2026-06-02 16:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508623,2026-06-02 16:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1508624,2026-06-02 16:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504732,2026-06-02 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
-ps_1508625,2026-06-02 17:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508626,2026-06-02 17:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1508625,2026-06-02 17:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508628,2026-06-02 18:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508627,2026-06-02 18:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504733,2026-06-03 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
@@ -262,14 +234,14 @@ ps_1504699,2026-06-03 10:30:00,TBD,TBD,European Pro League,Series 7 Closed Quali
 ps_1504734,2026-06-03 11:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1508630,2026-06-03 12:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508629,2026-06-03 12:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1508631,2026-06-03 13:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508632,2026-06-03 13:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1508631,2026-06-03 13:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504735,2026-06-03 14:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1508634,2026-06-03 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508633,2026-06-03 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1508636,2026-06-03 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508635,2026-06-03 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504736,2026-06-03 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1508636,2026-06-03 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504748,2026-06-04 08:00:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504737,2026-06-04 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1504749,2026-06-04 10:30:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
@@ -279,9 +251,9 @@ ps_1508637,2026-06-04 12:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_starte
 ps_1504739,2026-06-04 14:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1508640,2026-06-04 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1508639,2026-06-04 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1508642,2026-06-04 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
-ps_1508641,2026-06-04 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504740,2026-06-04 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1508641,2026-06-04 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
+ps_1508642,2026-06-04 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,https://www.twitch.tv/ESLCSb,pandascore
 ps_1504753,2026-06-05 08:00:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504741,2026-06-05 08:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1504754,2026-06-05 10:30:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
@@ -294,14 +266,47 @@ ps_1504744,2026-06-05 17:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_star
 ps_1504758,2026-06-06 08:00:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504745,2026-06-06 10:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
 ps_1504759,2026-06-06 10:30:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1508648,2026-06-06 10:30:00,Astralis,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508649,2026-06-06 10:30:00,G2,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508650,2026-06-06 10:30:00,FUT Esports,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508647,2026-06-06 10:30:00,Spirit,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508664,2026-06-06 10:30:00,9z,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508671,2026-06-06 10:30:00,paiN,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508651,2026-06-06 10:30:00,Legacy,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508672,2026-06-06 10:30:00,Monte,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
 ps_1504746,2026-06-06 13:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1508674,2026-06-06 15:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508673,2026-06-06 15:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
 ps_1504747,2026-06-06 16:00:00,TBD,TBD,CCT Europe,Series 3 2026,best_of,not_started,https://kick.com/cct_cs,pandascore
+ps_1508676,2026-06-06 16:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508675,2026-06-06 16:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508677,2026-06-06 17:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508678,2026-06-06 17:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508680,2026-06-06 18:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508679,2026-06-06 18:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
 ps_1504763,2026-06-07 08:00:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504764,2026-06-07 10:30:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1508682,2026-06-07 12:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508681,2026-06-07 12:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508684,2026-06-07 13:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508683,2026-06-07 13:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508686,2026-06-07 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508685,2026-06-07 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508687,2026-06-07 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508688,2026-06-07 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
 ps_1504750,2026-06-08 08:00:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504751,2026-06-08 10:30:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1508708,2026-06-08 12:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508707,2026-06-08 12:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508710,2026-06-08 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508709,2026-06-08 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508712,2026-06-08 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508711,2026-06-08 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
 ps_1504755,2026-06-09 08:00:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504756,2026-06-09 10:30:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
+ps_1508713,2026-06-09 12:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508714,2026-06-09 14:30:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
+ps_1508715,2026-06-09 17:00:00,TBD,TBD,IEM,Cologne Major 2026,best_of,not_started,,pandascore
 ps_1504760,2026-06-10 08:00:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504761,2026-06-10 10:30:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore
 ps_1504765,2026-06-11 08:00:00,TBD,TBD,European Pro League,Series 7 2026,best_of,not_started,https://kick.com/eplcs_en,pandascore

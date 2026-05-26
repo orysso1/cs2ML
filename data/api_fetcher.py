@@ -346,13 +346,13 @@ def _parse_ps_upcoming(m: dict) -> dict | None:
 # GRID — In-Game-Stats für abgeschlossene Matches
 # ─────────────────────────────────────────────────────────────────────────────
 
-# CS2 Title-ID in GRID = 3
+# GRID CS2 Query — ohne titleId-Filter (Open Access hat keinen Titel-Filter)
+# CS2-Matches werden nach dem Laden gefiltert
 GRID_CS2_QUERY = """
 query GetCS2Series($after: Cursor, $first: Int) {
   allSeries(
     first: $first
     after: $after
-    filter: { titleId: { eq: 3 } }
     orderBy: STARTED_AT_DESC
   ) {
     pageInfo { hasNextPage endCursor }
@@ -360,7 +360,71 @@ query GetCS2Series($after: Cursor, $first: Int) {
       node {
         id
         startTimeScheduled
-        format { nameShortened }
+        title { name }
+        teams {
+          baseInfo { id name }
+          won
+        }
+        games {
+          sequenceNumber
+          map { name }
+          teams {
+            baseInfo { name }
+            won
+            players {
+              baseInfo { nickname }
+              kills deaths assists
+              adr hsPercent
+              kastPercent rating
+            }
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+# Live Data Feed Query — Open Access nutzt 'series' nicht 'allSeries'
+GRID_LIVE_QUERY = """
+query GetLiveSeries($after: Cursor, $first: Int) {
+  seriesState(
+    first: $first
+    after: $after
+    orderBy: STARTED_AT_DESC
+  ) {
+    pageInfo { hasNextPage endCursor }
+    edges {
+      node {
+        id
+        startedAt
+        title { name }
+        teams {
+          name won
+          players {
+            nickname kills deaths assists rating
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+# Korrekte Query für Open Access (field heißt 'series')
+GRID_SERIES_QUERY = """
+query GetSeries($after: Cursor, $first: Int) {
+  series(
+    first: $first
+    after: $after
+    orderBy: STARTED_AT_DESC
+  ) {
+    pageInfo { hasNextPage endCursor }
+    edges {
+      node {
+        id
+        startTimeScheduled
+        title { name }
         teams {
           baseInfo { id name }
           won
@@ -386,10 +450,14 @@ query GetCS2Series($after: Cursor, $first: Int) {
 """
 
 
+# CS2-Titel-Namen die GRID nutzt
+GRID_CS2_TITLES = {"cs2", "counter-strike 2", "counter-strike", "csgo", "cs:go"}
+
+
 def fetch_grid_stats(max_series: int = 50) -> list[dict]:
     """
     Holt CS2 In-Game-Stats von GRID Open Access.
-    Gibt normalisierte Match-Dicts zurück (kompatibel mit internem Schema).
+    Filtert CS2-Matches nach Titel-Namen (Open Access hat keinen titleId-Filter).
     """
     if not GRID_KEY:
         log.info("GRID_API_KEY nicht gesetzt — GRID-Daten werden übersprungen.")
@@ -397,36 +465,80 @@ def fetch_grid_stats(max_series: int = 50) -> list[dict]:
 
     log.info(f"GRID: Lade bis zu {max_series} CS2 Series ...")
 
+    # Erst Schema testen um richtigen Query-Typ zu finden
+    query_key, query = _find_grid_query()
+    if not query_key:
+        log.error("GRID: Kein funktionierender Query-Typ gefunden. "
+                  "Prüfe deinen Open Access Plan.")
+        return []
+
     all_matches = []
-    cursor = None
-    fetched = 0
+    cursor      = None
+    fetched     = 0
+    page        = 1
 
     while fetched < max_series:
         variables = {
             "first": min(20, max_series - fetched),
             "after": cursor,
         }
-        data = _grid_query(GRID_CS2_QUERY, variables)
+        data = _grid_query(query, variables)
         if not data:
             break
 
-        series_data = data.get("allSeries", {})
-        edges = series_data.get("edges", [])
+        series_data = data.get(query_key, {})
+        edges       = series_data.get("edges", [])
 
+        cs2_on_page = 0
         for edge in edges:
-            node = edge["node"]
+            node  = edge["node"]
+            title = (node.get("title") or {}).get("name", "")
+            # Nur CS2-Matches behalten
+            if title.lower() not in GRID_CS2_TITLES:
+                continue
             parsed = _parse_grid_series(node)
             if parsed:
                 all_matches.append(parsed)
+                cs2_on_page += 1
 
         fetched += len(edges)
+        log.info(f"  Seite {page}: {cs2_on_page} CS2-Matches "
+                 f"(gesamt: {len(all_matches)}, geladen: {fetched})")
+
         page_info = series_data.get("pageInfo", {})
-        if not page_info.get("hasNextPage"):
+        if not page_info.get("hasNextPage") or len(edges) == 0:
             break
         cursor = page_info.get("endCursor")
+        page  += 1
 
-    log.info(f"GRID: {len(all_matches)} Matches geladen")
+    log.info(f"GRID: {len(all_matches)} CS2-Matches geladen")
     return all_matches
+
+
+def _find_grid_query() -> tuple[str, str]:
+    """
+    Testet welche GRID-Query für diesen API-Key funktioniert.
+    Gibt (query_key, query_string) zurück oder (None, None).
+    """
+    # Test 1: series (Live Data Feed — Open Access)
+    test1 = _grid_query('{ series(first: 1) { edges { node { id } } } }')
+    if test1 and "series" in test1:
+        log.info("GRID: Nutze 'series' (Live Data Feed)")
+        return "series", GRID_SERIES_QUERY
+
+    # Test 2: allSeries (Central Data — meist kostenpflichtig)
+    test2 = _grid_query('{ allSeries(first: 1) { edges { node { id } } } }')
+    if test2 and "allSeries" in test2:
+        log.info("GRID: Nutze 'allSeries' (Central Data API)")
+        return "allSeries", GRID_CS2_QUERY
+
+    log.error("GRID: Kein Query-Typ verfügbar.\n"
+              "  Open Access erlaubt nur Live-Daten (laufende Matches),\n"
+              "  KEINE historischen Series. Du kannst:\n"
+              "  1. Auf neue Matches warten und live fetchen\n"
+              "  2. auto_updater.py --watch laufen lassen\n"
+              "  Mehr Info: grid.gg/data-portal")
+    return None, None
 
 
 def _parse_grid_series(node: dict) -> dict | None:
@@ -435,6 +547,11 @@ def _parse_grid_series(node: dict) -> dict | None:
         teams = node.get("teams", [])
         if len(teams) < 2:
             return None
+        # Titel-Feld für Live-Data-Feed Format normalisieren
+        if "title" not in node and "teams" in node:
+            for t in teams:
+                if "name" in t and "baseInfo" not in t:
+                    t["baseInfo"] = {"name": t["name"], "id": ""}
 
         team_a_obj = teams[0]
         team_b_obj = teams[1]
@@ -635,8 +752,8 @@ def test_keys():
     if not GRID_KEY:
         print("❌ GRID_API_KEY nicht gesetzt (optional)")
     else:
-        test_query = """{ allSeries(first: 1, filter: {titleId: {eq: 3}}) {
-            edges { node { id startTimeScheduled teams { baseInfo { name } } } }
+        test_query = """{ allSeries(first: 1) {
+            edges { node { id startTimeScheduled title { name } teams { baseInfo { name } } } }
         }}"""
         data = _grid_query(test_query)
         if data:
@@ -676,7 +793,8 @@ Beispiele:
     parser.add_argument("--fetch-upcoming", action="store_true", help="Kommende Matches laden")
     parser.add_argument("--fetch-grid",     action="store_true", help="GRID In-Game-Stats laden")
     parser.add_argument("--update",         action="store_true", help="Alles auf einmal")
-    parser.add_argument("--days",           type=int, default=30, help="Tage zurück (default: 30)")
+    parser.add_argument("--days",           type=int, default=30,   help="Tage zurück für PandaScore (default: 30)")
+    parser.add_argument("--max-series",     type=int, default=9999, help="Max. GRID-Series (default: unbegrenzt)")
     parser.add_argument("--retrain",        action="store_true", help="Nach Update Modell neu trainieren")
     args = parser.parse_args()
 
@@ -697,7 +815,7 @@ Beispiele:
                   f"{u['team_a']} vs {u['team_b']} ({u['event']})")
 
     elif args.fetch_grid:
-        matches = fetch_grid_stats(max_series=100)
+        matches = fetch_grid_stats(max_series=args.max_series)
         if matches:
             merge_into_csv(matches)
 
@@ -714,7 +832,7 @@ Beispiele:
 
         # 2. GRID Stats
         print("\n[2/3] GRID In-Game-Stats ...")
-        grid_matches = fetch_grid_stats(max_series=50)
+        grid_matches = fetch_grid_stats(max_series=args.max_series)
         if grid_matches:
             merge_into_csv(grid_matches)
 

@@ -1,0 +1,93 @@
+[
+  {
+    "match": "B8 vs TYLOO",
+    "team": "TYLOO",
+    "odds": 2.15,
+    "stake": 10.7,
+    "ev": 0.2164005666971207,
+    "prob_model": 0.5657677054405212,
+    "bookmaker": "Sonstige",
+    "date": "2026-05-26",
+    "id": 1,
+    "timestamp": "2026-05-26T12:17:39.823128",
+    "result": "offen"
+  },
+  {
+    "match": "BetBoom vs Gaimin Gladiators",
+    "team": "Gaimin Gladiators",
+    "odds": 2.9,
+    "stake": 2.14,
+    "ev": 0.162554532289505,
+    "prob_model": 0.4008808732032776,
+    "bookmaker": "Sonstige",
+    "date": "2026-05-26",
+    "id": 2,
+    "timestamp": "2026-05-26T12:22:36.497370",
+    "result": "offen"
+  },
+  {
+    "match": "GamerLegion vs NRG",
+    "team": "NRG",
+    "odds": 2.7,
+    "stake": 3.26,
+    "ev": 0.22162362933158875,
+    "prob_model": 0.4524531960487366,
+    "bookmaker": "Sonstige",
+    "date": "2026-05-26",
+    "id": 3,
+    "timestamp": "2026-05-26T12:23:13.672610",
+    "result": "offen"
+  },
+  {
+    "match": "HEROIC vs Sharks",
+    "team": "Sharks",
+    "odds": 2.5,
+    "stake": 9.5,
+    "ev": 0.5700525045394897,
+    "prob_model": 0.6280210018157959,
+    "bookmaker": "Sonstige",
+    "date": "2026-05-26",
+    "id": 4,
+    "timestamp": "2026-05-26T12:26:26.471739",
+    "result": "offen"
+  },
+  {
+    "match": "M80 vs Lynn Vision",
+    "team": "Lynn Vision",
+    "odds": 2.3,
+    "stake": 5.94,
+    "ev": 0.30878062248229976,
+    "prob_model": 0.5690350532531738,
+    "bookmaker": "Sonstige",
+    "date": "2026-05-26",
+    "id": 5,
+    "timestamp": "2026-05-26T12:27:12.305972",
+    "result": "offen"
+  },
+  {
+    "match": "MIBR vs THUNDER dOWNUNDER",
+    "team": "THUNDER dOWNUNDER",
+    "odds": 2.9,
+    "stake": 8.07,
+    "ev": 0.612963831424713,
+    "prob_model": 0.5561944246292114,
+    "bookmaker": "Sonstige",
+    "date": "2026-05-26",
+    "id": 6,
+    "timestamp": "2026-05-26T12:27:40.443731",
+    "result": "offen"
+  },
+  {
+    "match": "SINNERS vs FlyQuest",
+    "team": "FlyQuest",
+    "odds": 2.15,
+    "stake": 2.96,
+    "ev": 0.13612703084945665,
+    "prob_model": 0.5284311771392822,
+    "bookmaker": "Sonstige",
+    "date": "2026-05-26",
+    "id": 7,
+    "timestamp": "2026-05-26T12:28:12.861843",
+    "result": "offen"
+  }
+]
