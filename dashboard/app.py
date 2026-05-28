@@ -624,6 +624,41 @@ def main():
 
         st.plotly_chart(accuracy_chart(bt), use_container_width=True)
 
+        # Walk-Forward-Ergebnisse
+        wf_path = Path("data/walk_forward_results.csv")
+        if wf_path.exists():
+            st.subheader("Walk-Forward-Validation")
+            wf = pd.read_csv(wf_path)
+            wf_fig = go.Figure()
+            wf_fig.add_trace(go.Bar(
+                x=[f"Split {r}" for r in wf["split"]],
+                y=wf["accuracy"],
+                marker_color=[GREEN if a > 0.6 else BLUE for a in wf["accuracy"]],
+                text=[f"{a:.1%}" for a in wf["accuracy"]],
+                textposition="outside",
+                name="Accuracy",
+            ))
+            if "bet_accuracy" in wf.columns:
+                wf_fig.add_trace(go.Scatter(
+                    x=[f"Split {r}" for r in wf["split"]],
+                    y=wf["bet_accuracy"].fillna(0),
+                    mode="lines+markers",
+                    line=dict(color=ORANGE, width=2),
+                    name="Bet-Accuracy (EV>5%)",
+                ))
+            wf_fig.add_hline(y=0.5, line_dash="dash", line_color="#555")
+            wf_fig.update_layout(
+                title=f"Walk-Forward: Ø {wf['accuracy'].mean():.1%} ± {wf['accuracy'].std():.1%}",
+                yaxis=dict(tickformat=".0%", range=[0.3, 0.9]),
+                paper_bgcolor=DARK, plot_bgcolor=PANEL, font_color="#a0c0d0",
+                height=300, legend=dict(bgcolor="rgba(0,0,0,0)"),
+            )
+            st.plotly_chart(wf_fig, use_container_width=True)
+
+            st.dataframe(wf[["split","cutoff","train_matches","val_matches",
+                              "accuracy","auc","bet_matches","bet_accuracy","roi_sim"]],
+                         use_container_width=True, hide_index=True)
+
         if model:
             from models.trainer import get_feature_importance
             st.plotly_chart(fi_chart(get_feature_importance(model)), use_container_width=True)

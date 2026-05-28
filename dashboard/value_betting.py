@@ -200,6 +200,13 @@ def update_bet_result(bet_id: int, result: str, actual_winner: str = ""):
     BETS_FILE.write_text(json.dumps(bets, indent=2, ensure_ascii=False))
 
 
+def delete_bet(bet_id: int):
+    """Löscht eine Wette aus dem Log."""
+    bets = load_bets()
+    bets = [b for b in bets if b["id"] != bet_id]
+    BETS_FILE.write_text(json.dumps(bets, indent=2, ensure_ascii=False))
+
+
 def bet_stats(bets: list[dict]) -> dict:
     closed = [b for b in bets if b["result"] in ("gewonnen", "verloren")]
     if not closed:
@@ -357,13 +364,59 @@ def render(model, elo_ratings, df_raw, df_feat, teams):
 
         st.markdown("---")
 
-        # Team-Auswahl
-        c1, c2 = st.columns(2)
-        team_a = c1.selectbox("🟦 Team A", teams, key="vb_ta")
-        team_b = c2.selectbox("🟥 Team B",
-                              [t for t in teams if t != team_a], key="vb_tb")
+        # ── Match-Auswahl: Upcoming oder manuell ──────────────────────────────
+        upcoming_csv = Path(__file__).parent.parent / "data" / "upcoming_matches.csv"
+        df_up = None
+        if upcoming_csv.exists():
+            try:
+                _df = pd.read_csv(upcoming_csv, parse_dates=["date"])
+                _df = _df[
+                    (_df["team_a"].notna()) & (_df["team_b"].notna()) &
+                    (_df["team_a"] != "TBD")  & (_df["team_b"] != "TBD") &
+                    (_df["date"] >= pd.Timestamp.now() - pd.Timedelta(hours=3))
+                ].sort_values("date")
+                if len(_df) > 0:
+                    df_up = _df
+            except Exception:
+                pass
 
-        # Quoten-Eingabe
+        # Toggle: Upcoming vs. Manuell
+        if df_up is not None:
+            source_mode = st.radio(
+                "Match auswählen",
+                ["📅 Aus Upcoming Matches", "✏️ Manuell"],
+                horizontal=True,
+                key="vb_source_mode",
+            )
+        else:
+            source_mode = "✏️ Manuell"
+
+        team_a, team_b = None, None
+
+        if source_mode == "📅 Aus Upcoming Matches" and df_up is not None:
+            # Upcoming-Dropdown
+            match_options = {
+                f"{row['date'].strftime('%m-%d %H:%M')}  —  {row['team_a']}  vs  {row['team_b']}"
+                f"  ({row.get('event','')})": (row["team_a"], row["team_b"])
+                for _, row in df_up.iterrows()
+            }
+            selected = st.selectbox(
+                "Kommendes Match",
+                list(match_options.keys()),
+                key="vb_upcoming_select",
+            )
+            team_a, team_b = match_options[selected]
+            st.markdown(
+                f"**🟦 {team_a}** &nbsp;&nbsp; vs &nbsp;&nbsp; **🟥 {team_b}**"
+            )
+        else:
+            # Manuelle Auswahl
+            c1, c2 = st.columns(2)
+            team_a = c1.selectbox("🟦 Team A", teams, key="vb_ta")
+            team_b = c2.selectbox("🟥 Team B",
+                                  [t for t in teams if t != team_a], key="vb_tb")
+
+        # ── Quoten-Eingabe ─────────────────────────────────────────────────────
         st.markdown("#### Buchmacher-Quoten eingeben")
         st.caption("Dezimalquoten (z.B. 1.85 bedeutet: 1€ einsetzen → 1.85€ zurück bei Sieg)")
 
@@ -534,16 +587,41 @@ def render(model, elo_ratings, df_raw, df_feat, teams):
                         c2.write(f"**EV:** {bet.get('ev',0)*100:+.1f}%")
                         c2.write(f"**Modell-Prob.:** {bet.get('prob_model',0):.1%}")
 
-                        col_w, col_l = c3.columns(2)
-                        if col_w.button("✅ Gewonnen", key=f"won_{bet['id']}"):
+                        col_w, col_l, col_d = c3.columns(3)
+                        if col_w.button("✅ Gewonnen", key=f"open_won_{bet['id']}"):
                             update_bet_result(bet["id"], "gewonnen", bet["team"])
                             st.rerun()
-                        if col_l.button("❌ Verloren", key=f"lost_{bet['id']}"):
+                        if col_l.button("❌ Verloren", key=f"open_lost_{bet['id']}"):
                             update_bet_result(bet["id"], "verloren")
                             st.rerun()
+                        if col_d.button("🗑️", key=f"open_del_{bet['id']}",
+                                        help="Wette löschen"):
+                            delete_bet(bet["id"])
+                            st.rerun()
 
-            # Alle Wetten als Tabelle
+            # Alle Wetten als Tabelle mit Lösch-Option
             st.markdown("#### Alle Wetten")
+
+            # Abgeschlossene Wetten einzeln mit Lösch-Button
+            closed_bets = [b for b in bets if b["result"] != "offen"]
+            if closed_bets:
+                with st.expander(f"Abgeschlossene Wetten ({len(closed_bets)}) — löschen"):
+                    for bet in reversed(closed_bets):
+                        pnl = bet.get("pnl", 0)
+                        pnl_str = f"{pnl:+.2f}€" if isinstance(pnl, (int,float)) else "—"
+                        icon = "✅" if bet["result"] == "gewonnen" else "❌"
+                        c1, c2 = st.columns([8, 1])
+                        c1.write(
+                            f"{icon} **#{bet['id']}** — {bet['match']} — "
+                            f"{bet['team']} @ {bet['odds']:.2f} — "
+                            f"{bet['stake']:.2f}€ — **{pnl_str}**"
+                        )
+                        if c2.button("🗑️", key=f"del_closed_{bet['id']}",
+                                     help="Wette löschen"):
+                            delete_bet(bet["id"])
+                            st.rerun()
+
+            # Übersichtstabelle
             rows = []
             for b in reversed(bets):
                 pnl = b.get("pnl", "—")
@@ -560,6 +638,18 @@ def render(model, elo_ratings, df_raw, df_feat, teams):
                     "Buchmacher": b.get("bookmaker",""),
                 })
             st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+            # Alle löschen
+            st.markdown("---")
+            if st.button("🗑️ Alle Wetten löschen", type="secondary"):
+                if st.session_state.get("confirm_delete_all"):
+                    BETS_FILE.unlink(missing_ok=True)
+                    st.session_state.pop("confirm_delete_all", None)
+                    st.success("Alle Wetten gelöscht.")
+                    st.rerun()
+                else:
+                    st.session_state["confirm_delete_all"] = True
+                    st.warning("Nochmal klicken zum Bestätigen.")
 
     # ═══════════════════════════════════════════════════════════════════════
     # TAB 3: Statistik

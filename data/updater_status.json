@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-05-26T09:56:16.411096+00:00",
-  "new_matches": 37,
+  "timestamp": "2026-05-28T13:38:02.382876+00:00",
+  "new_matches": 75,
   "retrained": true,
-  "val_accuracy": 0.6276213301378071,
+  "val_accuracy": 0.6218311959439308,
   "errors": []
 }
