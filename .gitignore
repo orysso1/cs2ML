@@ -227,3 +227,5 @@ __marimo__/
 *.joblib 
 
 .env*
+
+*.csv
